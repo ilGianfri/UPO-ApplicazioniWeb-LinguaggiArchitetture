@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using JobScheduler.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobScheduler.Data
@@ -16,9 +17,9 @@ namespace JobScheduler.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<Node>().ToTable("Nodes");
-            builder.Entity<Job>().ToTable("Jobs");
-            builder.Entity<Schedule>().ToTable("Schedules");
+            builder.Entity<Node>().ToTable("Nodes").HasKey(x => x.Id);
+            builder.Entity<Job>().ToTable("Jobs").HasKey(x => x.Id);
+            builder.Entity<Schedule>().ToTable("Schedules").HasKey(x => x.Id);
 
             base.OnModelCreating(builder);
         }
