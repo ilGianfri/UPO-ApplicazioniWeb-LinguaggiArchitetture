@@ -18,8 +18,6 @@ namespace JobScheduler.Areas.Identity.Pages.Account.Manage
 
         public static string DeletePersonalData => "DeletePersonalData";
 
-        public static string ExternalLogins => "ExternalLogins";
-
         public static string PersonalData => "PersonalData";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
@@ -33,8 +31,6 @@ namespace JobScheduler.Areas.Identity.Pages.Account.Manage
         public static string DownloadPersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DownloadPersonalData);
 
         public static string DeletePersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, DeletePersonalData);
-
-        public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
 
         public static string PersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, PersonalData);
 
