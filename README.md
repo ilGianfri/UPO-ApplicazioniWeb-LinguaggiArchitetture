@@ -14,7 +14,7 @@ dati (schedulazioni, indirizzo IP dei nodi, …)
   
 * I nodi Slave possono essere organizzati in gruppi (un nodo può appartenere a più gruppi).
 * Il job è l’oggetto della schedulazione ed è descritto da:
-  * (Obbligatorio) Path (locale rispetto al file system dello Slave1
+  * (Obbligatorio) Path (locale rispetto al file system dello Slave
 ) dell’eseguibile che
 deve essere lanciato
   * (Opzionale) Argomenti: stringa contenente i parametri da passare command-line
