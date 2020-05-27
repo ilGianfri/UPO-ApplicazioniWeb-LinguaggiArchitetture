@@ -1,9 +1,57 @@
 ﻿@page "/administration"
+@using Microsoft.AspNetCore.Identity;
+@using System.Net.Http
+@using System.Net.Http.Json 
+@inject HttpClient httpClient
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
- <AuthorizeView Roles="Admin">
-<h3>Administration</h3>
+<AuthorizeView Roles="Admin">
+    <h3>Administration</h3>
 
-@code {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>User Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Users)
+            {
+                <tr>
+                    <td>@user.Id.Substring(0, 5) ...</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => EditUser(user))">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-}
+    @code {
+        List<IdentityUser> Users = new List<IdentityUser>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            await GetUsers();
+        }
+
+        private async Task GetUsers()
+        {
+            await httpClient.GetFromJsonAsync<List<IdentityUser>>("api/users");
+        }
+
+
+        private async Task EditUser(IdentityUser _IdentityUser)
+        {
+        }
+    }
 </AuthorizeView>

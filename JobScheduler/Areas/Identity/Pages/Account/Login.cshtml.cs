@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.Encodings.Web;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+using System.Text.Json;
+using JobScheduler.Models;
+using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace JobScheduler.Areas.Identity.Pages.Account
 {
@@ -59,19 +59,17 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            //ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             if (ModelState.IsValid)
             {
@@ -81,11 +79,29 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    HttpClient client = new HttpClient
+                    {
+                        BaseAddress = new System.Uri("https://localhost:44383")
+                    };
+                    HttpResponseMessage response = await client.PostAsync("/api/tokens", new StringContent(JsonSerializer.Serialize(Input), Encoding.UTF8, "application/json"));
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        string jwtToken = JsonSerializer.Deserialize<JwtToken>(content).Token;
+                        if (string.IsNullOrEmpty(jwtToken))
+                        {
+                            ModelState.AddModelError(string.Empty, "Cannot get a valid token. Try again.");
+                            return Page();
+                        }
+                        HttpContext.Session.SetString("JWTToken", jwtToken);
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {

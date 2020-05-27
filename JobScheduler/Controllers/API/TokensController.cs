@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using JobScheduler.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +54,7 @@ namespace JobScheduler.Controllers.API
 
                         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-                        return Ok(new
+                        return Ok(new JwtToken
                         {
                             Token = tokenHandler.WriteToken(token),
                             Expiration = token.ValidTo,

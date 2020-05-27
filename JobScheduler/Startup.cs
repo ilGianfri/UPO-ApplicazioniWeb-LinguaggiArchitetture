@@ -11,6 +11,8 @@ using JobScheduler.Data;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Net.Http;
+using System;
 
 namespace JobScheduler
 {
@@ -39,9 +41,9 @@ namespace JobScheduler
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             //services.AddSingleton<WeatherForecastService>();
 
-            //services.AddSwaggerGen(c =>
+            //services.addswaggergen(c =>
             //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobScheduler API", Version = "v1" });
+            //    c.swaggerdoc("v1", new openapiinfo { title = "jobscheduler api", version = "v1" });
             //});
 
             services.AddAuthentication()
@@ -55,6 +57,9 @@ namespace JobScheduler
                         ValidateAudience = false
                     };
                 });
+
+            services.AddMemoryCache();
+            services.AddSession();
 
             services.AddScoped<DataSeed>();
         }
@@ -81,6 +86,7 @@ namespace JobScheduler
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
