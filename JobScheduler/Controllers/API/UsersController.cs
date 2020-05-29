@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +26,7 @@ namespace JobScheduler.Controllers.API
         public async Task<IEnumerable<IdentityUser>> Get()
         {
             var users = await _userManager.Users.ToListAsync();
+            //var userWithRoles = await GetRolesAsync(users.Data).ToListAsync();
 
             return users;
         }

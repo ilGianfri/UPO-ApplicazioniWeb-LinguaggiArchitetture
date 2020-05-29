@@ -9,10 +9,10 @@ using Microsoft.Extensions.Hosting;
 using JobScheduler.Areas.Identity;
 using JobScheduler.Data;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Net.Http;
-using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JobScheduler
 {
@@ -39,23 +39,26 @@ namespace JobScheduler
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            //services.AddSingleton<WeatherForecastService>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<HttpClient>();
 
             //services.addswaggergen(c =>
             //{
-            //    c.swaggerdoc("v1", new openapiinfo { title = "jobscheduler api", version = "v1" });
+            //    c.swaggerdoc("v1", new openapiinfo { title = "jobscheduler Api", version = "v1" });
             //});
 
             services.AddAuthentication()
                 .AddCookie()
-                .AddJwtBearer(configureOptions =>
+                .AddJwtBearer(options =>
                 {
-                    configureOptions.TokenValidationParameters = new TokenValidationParameters
+                    options.TokenValidationParameters = new TokenValidationParameters
                     {
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"])),
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
                     };
+                    options.SaveToken = true;
                 });
 
             services.AddMemoryCache();

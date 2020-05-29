@@ -80,11 +80,8 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
 
-                    HttpClient client = new HttpClient
-                    {
-                        BaseAddress = new System.Uri("https://localhost:44383")
-                    };
-                    HttpResponseMessage response = await client.PostAsync("/api/tokens", new StringContent(JsonSerializer.Serialize(Input), Encoding.UTF8, "application/json"));
+                    HttpClient client = new HttpClient();
+                    HttpResponseMessage response = await client.PostAsync("https://localhost:44383/api/tokens", new StringContent(JsonSerializer.Serialize(Input), Encoding.UTF8, "application/json"));
                     if (response.IsSuccessStatusCode)
                     {
                         var content = await response.Content.ReadAsStringAsync();
@@ -94,7 +91,9 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                             ModelState.AddModelError(string.Empty, "Cannot get a valid token. Try again.");
                             return Page();
                         }
-                        HttpContext.Session.SetString("JWTToken", jwtToken);
+                        
+                        Response.Cookies.Append("JWToken", jwtToken);
+                        //HttpContext.Session.SetString("JWToken", jwtToken);
                     }
 
                     return LocalRedirect(returnUrl);
