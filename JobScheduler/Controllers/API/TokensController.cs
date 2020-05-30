@@ -25,6 +25,9 @@ namespace JobScheduler.Controllers.API
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Creates a token for the users
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> CreateToken([FromBody] InputModel model)
         {

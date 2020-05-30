@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +17,7 @@ namespace JobScheduler.Controllers.API
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
 
         public UsersController(UserManager<IdentityUser> userManager)
         {
@@ -23,37 +26,56 @@ namespace JobScheduler.Controllers.API
 
         // GET: api/<UsersController>
         [HttpGet]
-        public async Task<IEnumerable<IdentityUser>> Get()
+        public async Task<ActionResult<IEnumerable<UserWithRole>>> Get()
         {
-            var users = await _userManager.Users.ToListAsync();
-            //var userWithRoles = await GetRolesAsync(users.Data).ToListAsync();
+            List<IdentityUser> users = await _userManager.Users.ToListAsync();
+            if (users == null)
+                return StatusCode(500);
 
-            return users;
+            List<UserWithRole> result = new List<UserWithRole>();
+            foreach (IdentityUser user in users)
+            {
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+                result.Add(new UserWithRole() { User = user, Roles = roles });
+            }
+            return result;
         }
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<UserWithRole>> Get(string id)
         {
-            return "value";
+            IdentityUser user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                IList<string> roles = await _userManager.GetRolesAsync(user);
+                UserWithRole result = new UserWithRole() { User = user, Roles = roles };
+
+                return result;
+            }
+
+            return NotFound();
         }
 
         // POST api/<UsersController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] IdentityUser value)
         {
+
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+
         }
     }
 }
