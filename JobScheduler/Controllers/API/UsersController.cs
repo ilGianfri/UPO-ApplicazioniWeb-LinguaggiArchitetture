@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +15,6 @@ namespace JobScheduler.Controllers.API
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IMapper _mapper;
 
         public UsersController(UserManager<IdentityUser> userManager)
         {
@@ -45,7 +42,11 @@ namespace JobScheduler.Controllers.API
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithRole>> Get(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest();
+
             IdentityUser user = await _userManager.FindByIdAsync(id);
+
             if (user != null)
             {
                 IList<string> roles = await _userManager.GetRolesAsync(user);
@@ -59,9 +60,19 @@ namespace JobScheduler.Controllers.API
 
         // POST api/<UsersController>
         [HttpPost]
-        public void Post([FromBody] IdentityUser value)
+        public async Task<IActionResult> PostCreate([FromBody] UserWithRole newUser)
         {
+            if (newUser == null)
+                return BadRequest();
 
+            var result = await _userManager.CreateAsync(newUser.User, newUser.User.PasswordHash);
+            if (result.Succeeded)
+            {
+                foreach (string role in newUser.Roles)
+                    await _userManager.AddToRoleAsync(newUser.User, role);
+                return StatusCode(201);
+            }
+            return BadRequest();
         }
 
         // PUT api/<UsersController>/5
@@ -73,9 +84,19 @@ namespace JobScheduler.Controllers.API
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest();
 
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var deleteResult = await _userManager.DeleteAsync(user);
+                return deleteResult.Succeeded ? Ok() : (IActionResult)BadRequest();
+            }
+
+            return NotFound();
         }
     }
 }

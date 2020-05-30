@@ -7,5 +7,11 @@ namespace JobScheduler.Models
     {
         public IdentityUser User { get; set; }
         public IEnumerable<string> Roles { get; set; }
+
+        public UserWithRole()
+        {
+            User = new IdentityUser();
+            Roles = new List<string>();
+        }
     }
 }

@@ -138,47 +138,64 @@
                 Users = await httpClient.GetFromJsonAsync<List<UserWithRole>>("https://localhost:44383/api/users");
             }
 
-            private async Task AddNewUser()
+            private void AddNewUser()
             {
+
                 currentDetailsUser = new UserWithRole();
                 ShowPopup = true;
             }
 
-            private async Task EditUser(UserWithRole user)
+            private void EditUser(UserWithRole user)
             {
                 currentDetailsUser = user;
                 ShowPopup = true;
+
+                //TODO
             }
 
             private async Task DeleteUser()
             {
+                ShowPopup = false;
 
+                if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+                await httpClient.DeleteAsync($"https://localhost:44383/api/users/{currentDetailsUser.User.Id}");
+
+                await GetUsers();
             }
 
+            //TODO: Use API
             private async Task SaveUser()
             {
                 //Existing user
-                if (currentDetailsUser.User.Id != "")
+                if (currentDetailsUser.User.Id == "")
                 {
-
+                    var user = await UserManager.FindByIdAsync(currentDetailsUser.User.Id);
+                    user.Email = currentDetailsUser.User.Email;
+                    await UserManager.UpdateAsync(user);
+                    if (!string.IsNullOrEmpty(currentDetailsUser.User.PasswordHash))
+                    {
+                        var resetToken = await UserManager.GeneratePasswordResetTokenAsync(user);
+                        var applyPassword = await UserManager.ResetPasswordAsync(user, resetToken, currentDetailsUser.User.PasswordHash);
+                        if (applyPassword.Succeeded)
+                        {
+                            ShowPopup = false;
+                        }
+                        else strError = applyPassword?.Errors?.FirstOrDefault()?.Description ?? "Error: Cannot set new password";
+                    }
                 }
                 else
                 {
-                    var user = new IdentityUser { UserName = currentDetailsUser.User.Email, Email = currentDetailsUser.User.Email };
-                    var result = await UserManager.CreateAsync(user, currentDetailsUser.User.PasswordHash);
-                    if (result.Succeeded)
-                    {
-                        var roleResult = await UserManager.AddToRoleAsync(user, CurrentUserRole); 
-                    }
-                    else
-                    {
-                        strError =
-                            result
-                            ?.Errors
-                            ?.FirstOrDefault()
-                            ?.Description ?? "Something went wrong, can't create user";
-                    }
+                    var user = new IdentityUser { UserName = currentDetailsUser.User.Email, Email = currentDetailsUser.User.Email, PasswordHash = currentDetailsUser.User.PasswordHash };
+
+                    if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+                    await httpClient.PostAsJsonAsync("https://localhost:44383/api/users", new UserWithRole() { User = user, Roles = new string[] { CurrentUserRole } });
                 }
+
+                ShowPopup = false;
             }
         }
     </AuthorizeView>
