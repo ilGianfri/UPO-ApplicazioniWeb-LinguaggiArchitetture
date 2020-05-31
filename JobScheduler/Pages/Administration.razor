@@ -4,196 +4,197 @@
 @inject UserManager<IdentityUser> UserManager
 @inject IHttpContextAccessor httpContextAccessor
 
-    <AuthorizeView Roles="Admin">
-        <h3>Administration</h3>
+<AuthorizeView Roles="Admin">
+    <h3>Administration</h3>
 
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (UserWithRole user in Users)
+            {
                 <tr>
-                    <th>Id</th>
-                    <th>User Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
+                    <td>@user.User.Id.Substring(0, 10) ...</td>
+                    <td>@user.User.UserName</td>
+                    <td>@user.User.Email</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditUser = true; EditUser(user); })">
+                            Edit
+                        </button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (UserWithRole user in Users)
-                {
-                    <tr>
-                        <td>@user.User.Id.Substring(0, 10) ...</td>
-                        <td>@user.User.UserName</td>
-                        <td>@user.User.Email</td>
-                        <td>@user.Role</td>
-                        <td>
-                            <button class="btn btn-primary"
-                                    @onclick="(() => { IsEditUser = true; EditUser(user); })">
-                                Edit
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
 
-        @if (ShowPopup)
-        {
-            <!-- This is the popup to create or edit a user -->
-            <div class="modal" tabindex="-1" style="display:block" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Edit User</h3>
-                            <!-- Button to close the popup -->
-                            <button type="button" class="close"
-                                    @onclick="ClosePopup">
-                                <span aria-hidden="true">X</span>
-                            </button>
-                        </div>
-                        <!-- Edit form for the current user -->
-                        <div class="modal-body">
-                            <!-- Only show Id if not a new user -->
-                            @if (currentDetailsUser.User.Id != "")
-                            {
-                                <p>@currentDetailsUser.User.Id</p>
-                            }
-                            <!-- Only allow edit if a new user -->
-                            @if (currentDetailsUser.User.Id != "")
-                            {
-                                <p>@currentDetailsUser.User.UserName</p>
-                            }
-                            else
-                            {
-                                <input class="form-control" type="text"
-                                       placeholder="UserName"
-                                       @bind="currentDetailsUser.User.UserName" />
-                            }
+    @if (ShowPopup)
+    {
+        <!-- This is the popup to create or edit a user -->
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Edit User</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current user -->
+                    <div class="modal-body">
+                        <!-- Only show Id if not a new user -->
+                        @if (CurrentDetailsUser.User.Id != "")
+                        {
+                            <p>@CurrentDetailsUser.User.Id</p>
+                        }
+                        <!-- Only allow edit if a new user -->
+                        @if (CurrentDetailsUser.User.Id != "")
+                        {
+                            <p>@CurrentDetailsUser.User.UserName</p>
+                        }
+                        else
+                        {
                             <input class="form-control" type="text"
-                                   placeholder="Email"
-                                   @bind="currentDetailsUser.User.Email" />
-                            <input class="form-control" type="password"
-                                   placeholder="Password"
-                                   @bind="currentDetailsUser.User.PasswordHash" />
-                            <select class="form-control"
-                                    @bind="@CurrentUserRole">
-                                @foreach (IdentityRole option in AvailableRoles)
-                                {
-                                    <option value="@option.Name">
-                                        @option.Name
-                                    </option>
-                                }
-                            </select>
-                            <br /><br />
-                            <!-- Button to save the user -->
-                            <button class="btn btn-primary"
-                                    @onclick="SaveUser">
-                                Save
-                            </button>
-                            <!-- Only show delete button if not a new record -->
-                            @if (currentDetailsUser.User.Id != "")
+                                   placeholder="UserName"
+                                   @bind="CurrentDetailsUser.User.UserName" />
+                        }
+                        <input class="form-control" type="text"
+                               placeholder="Email"
+                               @bind="CurrentDetailsUser.User.Email" />
+                        <input class="form-control" type="password"
+                               placeholder="Password"
+                               @bind="CurrentDetailsUser.User.PasswordHash" />
+                        <select class="form-control"
+                                @bind="@CurrentUserRole">
+                            @foreach (IdentityRole option in AvailableRoles)
                             {
-                                <!-- Button to delete the forecast -->
-                                <button class="btn btn-danger"
-                                        @onclick="DeleteUser">
-                                    Delete
-                                </button>
+                                <option value="@option.Name">
+                                    @option.Name
+                                </option>
                             }
-                            <br />
-                            <span style="color:red">@strError</span>
-                        </div>
+                        </select>
+                        <br /><br />
+                        <!-- Button to save the user -->
+                        <button class="btn btn-primary"
+                                @onclick="SaveUser">
+                            Save
+                        </button>
+                        <!-- Only show delete button if not a new record -->
+                        @if (CurrentDetailsUser.User.Id != "")
+                        {
+                            <!-- Button to delete the forecast -->
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteUser">
+                                Delete
+                            </button>
+                        }
+                        <br />
+                        <span style="color:red">@ErrorMessage</span>
                     </div>
                 </div>
             </div>
+        </div>
+    }
+    <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
+
+    @code {
+        //List of users
+        List<UserWithRole> Users = new List<UserWithRole>();
+        //To show or hide the popup
+        bool ShowPopup = false;
+        // Property used to add or edit the currently selected user
+        UserWithRole CurrentDetailsUser = new UserWithRole();
+        //To show erros
+        string ErrorMessage = string.Empty;
+        // Tracks the selected role for the currently selected user
+        string CurrentUserRole { get; set; }
+        // Possible user roles
+        List<IdentityRole> AvailableRoles = new List<IdentityRole>();
+
+        bool IsEditUser = false;
+
+        void ClosePopup()
+        {
+            ShowPopup = false;
+            IsEditUser = false;
         }
-        <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
 
-        @code {
-            //List of users
-            List<UserWithRole> Users = new List<UserWithRole>();
-            //To show or hide the popup
-            bool ShowPopup = false;
-            // Property used to add or edit the currently selected user
-            UserWithRole currentDetailsUser = new UserWithRole();
-            //To show erros
-            string strError = "";
-            // Tracks the selected role for the currently selected user
-            string CurrentUserRole { get; set; }
-            // Possible user roles
-            List<IdentityRole> AvailableRoles = new List<IdentityRole>();
-            bool IsEditUser = false;
+        protected override async Task OnInitializedAsync()
+        {
+            AvailableRoles = RoleManager.Roles.ToList();
+            await GetUsers();
+        }
 
-            void ClosePopup()
-            {
-                ShowPopup = false;
-                IsEditUser = false;
-            }
+        private async Task GetUsers()
+        {
+            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+            Users = await httpClient.GetFromJsonAsync<List<UserWithRole>>("https://localhost:44383/api/users");
+        }
 
-            protected override async Task OnInitializedAsync()
-            {
-                AvailableRoles = RoleManager.Roles.ToList();
-                await GetUsers();
-            }
+        private void AddNewUser()
+        {
 
-            private async Task GetUsers()
+            CurrentDetailsUser = new UserWithRole();
+            ShowPopup = true;
+        }
+
+        private void EditUser(UserWithRole user)
+        {
+            CurrentDetailsUser = user;
+            CurrentUserRole = user.Role;
+            ShowPopup = true;
+        }
+
+        private async Task DeleteUser()
+        {
+            ShowPopup = false;
+
+            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+            await httpClient.DeleteAsync($"https://localhost:44383/api/users/{CurrentDetailsUser.User.Id}");
+
+            await GetUsers();
+        }
+
+        private async Task SaveUser()
+        {
+            //Existing user
+            if (IsEditUser)
             {
                 if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-                Users = await httpClient.GetFromJsonAsync<List<UserWithRole>>("https://localhost:44383/api/users");
+
+                var response = await httpClient.PutAsJsonAsync($"https://localhost:44383/api/users/{CurrentDetailsUser.User.Id}", new UserWithRole() { User = CurrentDetailsUser.User, Role = CurrentUserRole });
+
+                if (response.IsSuccessStatusCode)
+                {
+                    ShowPopup = false;
+                }
+                else ErrorMessage = "Error: Cannot set new password";
             }
-
-            private void AddNewUser()
+            else
             {
-
-                currentDetailsUser = new UserWithRole();
-                ShowPopup = true;
-            }
-
-            private void EditUser(UserWithRole user)
-            {
-                currentDetailsUser = user;
-                CurrentUserRole = user.Role;
-                ShowPopup = true;
-            }
-
-            private async Task DeleteUser()
-            {
-                ShowPopup = false;
+                var user = new IdentityUser { UserName = CurrentDetailsUser.User.Email, Email = CurrentDetailsUser.User.Email, PasswordHash = CurrentDetailsUser.User.PasswordHash };
 
                 if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
 
-                await httpClient.DeleteAsync($"https://localhost:44383/api/users/{currentDetailsUser.User.Id}");
-
-                await GetUsers();
-            }
-
-            private async Task SaveUser()
-            {
-                //Existing user
-                if (IsEditUser)
-                {
-                    if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-                    var response = await httpClient.PutAsJsonAsync($"https://localhost:44383/api/users/{currentDetailsUser.User.Id}", new UserWithRole() { User = currentDetailsUser.User, Role = CurrentUserRole });
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        ShowPopup = false;
-                    }
-                    else strError = "Error: Cannot set new password";
-                }
-                else
-                {
-                    var user = new IdentityUser { UserName = currentDetailsUser.User.Email, Email = currentDetailsUser.User.Email, PasswordHash = currentDetailsUser.User.PasswordHash };
-
-                    if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-                    var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/users", new UserWithRole() { User = user, Role = CurrentUserRole });
-                    if (response.IsSuccessStatusCode)
-                        ShowPopup = false;
-                    else strError = "Error: Something went wrong.";
-                }
+                var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/users", new UserWithRole() { User = user, Role = CurrentUserRole });
+                if (response.IsSuccessStatusCode)
+                    ShowPopup = false;
+                else ErrorMessage = "Error: Something went wrong.";
             }
         }
-    </AuthorizeView>
+    }
+</AuthorizeView>

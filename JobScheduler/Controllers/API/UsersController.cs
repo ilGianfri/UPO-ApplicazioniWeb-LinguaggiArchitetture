@@ -47,7 +47,6 @@ namespace JobScheduler.Controllers.API
                 return BadRequest();
 
             IdentityUser user = await _userManager.FindByIdAsync(id);
-
             if (user != null)
             {
                 IList<string> roles = await _userManager.GetRolesAsync(user);
@@ -72,7 +71,7 @@ namespace JobScheduler.Controllers.API
                 await _userManager.AddToRoleAsync(newUser.User, newUser.Role);
                 return StatusCode(201);
             }
-            return BadRequest();
+            return StatusCode(500);
         }
 
         // PUT api/<UsersController>/5
