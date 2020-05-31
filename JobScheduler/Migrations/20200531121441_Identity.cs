@@ -49,12 +49,28 @@ namespace JobScheduler.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JobHistory",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    JobId = table.Column<string>(nullable: true),
+                    ExitCode = table.Column<string>(nullable: true),
+                    Pid = table.Column<int>(nullable: false),
+                    Output = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
                     Id = table.Column<decimal>(nullable: false),
                     Path = table.Column<string>(nullable: true),
-                    Parameters = table.Column<string>(nullable: true)
+                    Parameters = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,8 +135,8 @@ namespace JobScheduler.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(nullable: false),
-                    ProviderKey = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
+                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -164,8 +180,8 @@ namespace JobScheduler.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
+                    Name = table.Column<string>(maxLength: 128, nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -184,8 +200,9 @@ namespace JobScheduler.Migrations
                 columns: table => new
                 {
                     Id = table.Column<decimal>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
                     IP = table.Column<IPAddress>(nullable: true),
-                    Group = table.Column<int>(nullable: false),
+                    Group = table.Column<int[]>(nullable: true),
                     Role = table.Column<int>(nullable: false),
                     JobId = table.Column<decimal>(nullable: true)
                 },
@@ -259,6 +276,9 @@ namespace JobScheduler.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "JobHistory");
 
             migrationBuilder.DropTable(
                 name: "Nodes");

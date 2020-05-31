@@ -20,7 +20,7 @@ namespace JobScheduler.Migrations
                 .HasAnnotation("ProductVersion", "3.1.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("JobScheduler.Data.Job", b =>
+            modelBuilder.Entity("JobScheduler.Models.Job", b =>
                 {
                     b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,25 +32,53 @@ namespace JobScheduler.Migrations
                     b.Property<string>("Path")
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("JobScheduler.Data.Node", b =>
+            modelBuilder.Entity("JobScheduler.Models.JobReports", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExitCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JobId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Output")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Pid")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobHistory");
+                });
+
+            modelBuilder.Entity("JobScheduler.Models.Node", b =>
                 {
                     b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)");
 
-                    b.Property<int>("Group")
-                        .HasColumnType("integer");
+                    b.Property<int[]>("Group")
+                        .HasColumnType("integer[]");
 
                     b.Property<IPAddress>("IP")
                         .HasColumnType("inet");
 
                     b.Property<decimal?>("JobId")
                         .HasColumnType("numeric(20,0)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
@@ -62,7 +90,7 @@ namespace JobScheduler.Migrations
                     b.ToTable("Nodes");
                 });
 
-            modelBuilder.Entity("JobScheduler.Data.Schedule", b =>
+            modelBuilder.Entity("JobScheduler.Models.Schedule", b =>
                 {
                     b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
@@ -217,10 +245,12 @@ namespace JobScheduler.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
@@ -257,10 +287,12 @@ namespace JobScheduler.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
@@ -270,9 +302,9 @@ namespace JobScheduler.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("JobScheduler.Data.Node", b =>
+            modelBuilder.Entity("JobScheduler.Models.Node", b =>
                 {
-                    b.HasOne("JobScheduler.Data.Job", null)
+                    b.HasOne("JobScheduler.Models.Job", null)
                         .WithMany("Nodes")
                         .HasForeignKey("JobId");
                 });

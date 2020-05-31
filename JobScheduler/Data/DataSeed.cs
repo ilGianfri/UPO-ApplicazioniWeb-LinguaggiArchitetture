@@ -33,8 +33,9 @@ namespace JobScheduler.Data
                     Email = email
                 };
 
-                var result = await _userManager.CreateAsync(user, password);
-                if (!result.Succeeded) throw new InvalidOperationException("Cannot create default user");
+                IdentityResult result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded) 
+                    throw new InvalidOperationException("Cannot create default user");
             }
 
             if (! await _roleManager.RoleExistsAsync("Admin"))
@@ -45,8 +46,9 @@ namespace JobScheduler.Data
 
             if (!await _userManager.IsInRoleAsync(user, "Admin"))
             {
-                var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
-                if (!roleResult.Succeeded) throw new InvalidOperationException("Cannot add role Admin to default user");
+                IdentityResult roleResult = await _userManager.AddToRoleAsync(user, "Admin");
+                if (!roleResult.Succeeded) 
+                    throw new InvalidOperationException("Cannot add role Admin to default user");
             }
         }
     }
