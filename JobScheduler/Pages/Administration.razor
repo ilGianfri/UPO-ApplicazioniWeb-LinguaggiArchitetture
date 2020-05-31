@@ -89,9 +89,9 @@
                             Save
                         </button>
                         <!-- Only show delete button if not a new record -->
-                        @if (CurrentDetailsUser.User.Id != "")
+                        @if (IsEditUser)
                         {
-                            <!-- Button to delete the forecast -->
+                            <!-- Button to delete the user -->
                             <button class="btn btn-danger"
                                     @onclick="DeleteUser">
                                 Delete
@@ -108,19 +108,18 @@
 
     @code {
         //List of users
-        List<UserWithRole> Users = new List<UserWithRole>();
+        private List<UserWithRole> Users = new List<UserWithRole>();
         //To show or hide the popup
-        bool ShowPopup = false;
+        private bool ShowPopup = false;
         // Property used to add or edit the currently selected user
-        UserWithRole CurrentDetailsUser = new UserWithRole();
+        private UserWithRole CurrentDetailsUser = new UserWithRole();
         //To show erros
-        string ErrorMessage = string.Empty;
+        private string ErrorMessage = string.Empty;
         // Tracks the selected role for the currently selected user
-        string CurrentUserRole { get; set; }
+        private string CurrentUserRole { get; set; }
         // Possible user roles
-        List<IdentityRole> AvailableRoles = new List<IdentityRole>();
-
-        bool IsEditUser = false;
+        private  List<IdentityRole> AvailableRoles = new List<IdentityRole>();
+        private bool IsEditUser = false;
 
         void ClosePopup()
         {

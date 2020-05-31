@@ -16,7 +16,6 @@ namespace JobScheduler.Controllers.API
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
-
         public UsersController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
@@ -36,7 +35,7 @@ namespace JobScheduler.Controllers.API
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 result.Add(new UserWithRole() { User = user, Role = roles.FirstOrDefault() });
             }
-            return result;
+            return Ok(result);
         }
 
         // GET api/<UsersController>/5
@@ -52,7 +51,7 @@ namespace JobScheduler.Controllers.API
                 IList<string> roles = await _userManager.GetRolesAsync(user);
                 UserWithRole result = new UserWithRole() { User = user, Role = roles.FirstOrDefault() };
 
-                return result;
+                return Ok(result);
             }
 
             return NotFound();
@@ -124,7 +123,7 @@ namespace JobScheduler.Controllers.API
             if (user != null)
             {
                 var deleteResult = await _userManager.DeleteAsync(user);
-                return deleteResult.Succeeded ? Ok() : (IActionResult)BadRequest();
+                return deleteResult.Succeeded ? Ok() : StatusCode(500);
             }
 
             return NotFound();

@@ -27,7 +27,7 @@ namespace JobScheduler.Areas.Identity.Pages.Account
         {
             await _signInManager.SignOutAsync();
 
-            HttpContext.Session.Remove("JWTToken");
+            Response.Cookies.Delete("JWToken");
 
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)

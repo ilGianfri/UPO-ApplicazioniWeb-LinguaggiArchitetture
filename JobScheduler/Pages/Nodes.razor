@@ -1,0 +1,62 @@
+﻿@page "/nodes"
+@inject HttpClient httpClient
+@inject IHttpContextAccessor httpContextAccessor
+
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Nodes</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Friendly Name</th>
+                <th>IP</th>
+                <th>Groups</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Node node in ExistingNodes)
+            {
+                <tr>
+                    <td>@node.Id</td>
+                    <td>@node.Name</td>
+                    <td>@node.IP.ToString()</td>
+                    <td>@string.Join(",", node.Group)</td>
+                    <td>@node.Role</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditNode = true; EditNode(node); })">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</AuthorizeView>
+
+@code {
+    private List<Node> ExistingNodes = new List<Node>();
+    private bool IsEditNode = false;
+    private Node CurrentNode = new Node();
+    private bool ShowPopup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetNodes();
+    }
+
+    private async Task GetNodes()
+    {
+        if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+        ExistingNodes = await httpClient.GetFromJsonAsync<List<Node>>("https://localhost:44383/api/nodes");
+    }
+
+    private void EditNode(Node node)
+    {
+        CurrentNode = node;
+        ShowPopup = true;
+    }
+}

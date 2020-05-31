@@ -13,8 +13,6 @@ using System.Text;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Reflection;
-using AutoMapper;
 
 namespace JobScheduler
 {
