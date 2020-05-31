@@ -1,5 +1,4 @@
-# UPO-ApplicazioniWeb-LinguaggiArchitetture
-Progetto esame corso Applicazioni Web: Linguaggi &amp; Architetture 2019/2020
+# Progetto corso Applicazioni Web: Linguaggi &amp; Architetture 2019/2020
 
 Allo studente si chiede di implementare un job scheduler simile a http://cronicle.net/, in grado
 di lanciare processi (i job) in modo temporizzato su uno o più nodi, anche geograficamente
