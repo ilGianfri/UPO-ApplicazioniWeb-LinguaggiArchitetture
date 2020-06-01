@@ -44,14 +44,35 @@ namespace JobScheduler.Controllers.API
 
         // POST api/<JobsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> Post([FromBody] Job newJob)
         {
+            if (newJob == null)
+                return new EmptyResult();
+
+            _dbContext.Jobs.Add(newJob);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
         }
 
         // PUT api/<JobsController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(ulong id, [FromBody] Job modifiedJob)
         {
+            if (modifiedJob == null)
+                return BadRequest();
+
+            Job job = _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
+            if (job != null)
+            {
+                job = modifiedJob;
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(job);
+            }
+
+            return NotFound();
         }
 
         // DELETE api/<JobsController>/5
