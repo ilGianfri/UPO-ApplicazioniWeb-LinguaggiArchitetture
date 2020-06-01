@@ -42,7 +42,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title">Edit User</h3>
+                        <h3 class="modal-title">@DialogTitle</h3>
                         <!-- Button to close the popup -->
                         <button type="button" class="close"
                                 @onclick="ClosePopup">
@@ -107,6 +107,7 @@
     <button class="btn btn-success" @onclick="AddNewUser">Add User</button>
 
     @code {
+        private string DialogTitle = "New User";
         //List of users
         private List<UserWithRole> Users = new List<UserWithRole>();
         //To show or hide the popup
@@ -121,7 +122,7 @@
         private  List<IdentityRole> AvailableRoles = new List<IdentityRole>();
         private bool IsEditUser = false;
 
-        void ClosePopup()
+        private void ClosePopup()
         {
             ShowPopup = false;
             IsEditUser = false;
@@ -142,9 +143,9 @@
 
         private void AddNewUser()
         {
-
             CurrentDetailsUser = new UserWithRole();
             ShowPopup = true;
+            DialogTitle = "New User";
         }
 
         private void EditUser(UserWithRole user)
@@ -152,6 +153,7 @@
             CurrentDetailsUser = user;
             CurrentUserRole = user.Role;
             ShowPopup = true;
+            DialogTitle = "Edit User";
         }
 
         private async Task DeleteUser()
@@ -180,9 +182,9 @@
                 {
                     ShowPopup = false;
                 }
-                else ErrorMessage = "Error: Cannot set new password";
+                else ErrorMessage = "Error: Something went wrong while editing this user.";
             }
-            else
+            else //New user
             {
                 var user = new IdentityUser { UserName = CurrentDetailsUser.User.Email, Email = CurrentDetailsUser.User.Email, PasswordHash = CurrentDetailsUser.User.PasswordHash };
 
@@ -194,6 +196,8 @@
                     ShowPopup = false;
                 else ErrorMessage = "Error: Something went wrong.";
             }
+
+            await GetUsers();
         }
     }
 </AuthorizeView>

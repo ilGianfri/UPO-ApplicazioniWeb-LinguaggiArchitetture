@@ -199,7 +199,8 @@ namespace JobScheduler.Migrations
                 name: "Nodes",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(nullable: true),
                     IP = table.Column<IPAddress>(nullable: true),
                     Group = table.Column<int[]>(nullable: true),

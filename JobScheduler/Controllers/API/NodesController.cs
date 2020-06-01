@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using JobScheduler.Data;
 using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+#nullable enable
 
 namespace JobScheduler.Controllers.API
 {
@@ -24,7 +28,8 @@ namespace JobScheduler.Controllers.API
         [HttpGet]
         public ActionResult<IEnumerable<Node>> Get()
         {
-            return Ok(_dbContext.Nodes.ToArray());
+            var nodes = _dbContext.Nodes.ToArray();
+            return Ok(nodes);
         }
 
         // GET api/<NodesController>/5
@@ -42,25 +47,55 @@ namespace JobScheduler.Controllers.API
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Node node)
         {
-            if (node == null)
-                return BadRequest();
+            try
+            {
+                if (node == null)
+                    return BadRequest();
 
-            _dbContext.Nodes.Add(node);
-            await _dbContext.SaveChangesAsync();
+                node.IP = IPAddress.Parse(node.IPStr);
 
-            return Ok();
+                _dbContext.Nodes.Add(node);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<NodesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult<Node>> Put(int id, [FromBody] Node modifiedNode)
         {
+            if (modifiedNode == null)
+                return BadRequest();
+
+            Node node = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
+            if (node != null)
+            {
+                node.IPStr = modifiedNode.IPStr;
+                node.Group = modifiedNode.Group;
+                node.Name = modifiedNode.Name;
+                node.Role = modifiedNode.Role;
+
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(node);
+            }
+
+            return NotFound();
         }
 
         // DELETE api/<NodesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
+            _dbContext.Nodes.Remove(_dbContext.Nodes.FirstOrDefault(x => x.Id == id));
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

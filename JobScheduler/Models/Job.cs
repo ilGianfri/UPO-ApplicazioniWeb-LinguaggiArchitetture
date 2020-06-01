@@ -9,6 +9,7 @@
         public JobStatus Status { get; set; }
         
     }
+
     public enum JobStatus
     {
         Scheduled,
