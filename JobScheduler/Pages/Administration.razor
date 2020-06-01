@@ -20,7 +20,7 @@
             @foreach (UserWithRole user in Users)
             {
                 <tr>
-                    <td>@user.User.Id.Substring(0, 10) ...</td>
+                    <td>@user.User.Id</td>
                     <td>@user.User.UserName</td>
                     <td>@user.User.Email</td>
                     <td>@user.Role</td>
