@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+#nullable enable
+
 namespace JobScheduler.Controllers.API
 {
     [Route("api/[controller]")]

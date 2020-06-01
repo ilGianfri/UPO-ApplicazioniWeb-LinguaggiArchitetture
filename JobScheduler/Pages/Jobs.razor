@@ -1,8 +1,178 @@
 ﻿@page "/jobs"
 @inject HttpClient httpClient
+@inject IHttpContextAccessor httpContextAccessor
 
-<h3>Jobs</h3>
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Jobs</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Path</th>
+                <th>Parameters</th>
+                <th>Nodes</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Job node in ExistingJobs)
+            {
+                <tr>
+                    <td>@node.Id</td>
+                    <td>@node.Path</td>
+                    <td>@node.Parameters</td>
+                    <td>@string.Join(",",node.Nodes)</td>
+                    <td>@node.Status</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditJob = true; EditJob(node); })">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (ShowPopup)
+    {
+        <!-- This is the popup to create or edit a node -->
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">@DialogTitle</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current node -->
+                    <div class="modal-body">
+                        <!-- Only show Id if not a new node -->
+                        @if (CurrentJob.Id != 0)
+                        {
+                            <p>@CurrentJob.Id</p>
+                        }
+                        <input class="form-control" type="text"
+                               placeholder="Path"
+                               @bind="CurrentJob.Path" />
+                        <input class="form-control" type="text"
+                               placeholder="Parameters"
+                               @bind="CurrentJob.Parameters" />
+                        <input class="form-control" type="text"
+                               placeholder="Nodes (numbers separated by , - e.g 1,2,3)"
+                               @bind="CurrentJobNodesNames" />
+                        @*<select class="form-control"
+                                @bind="@CurrentNodeRole">
+                            @foreach (string option in AvailableRoles)
+                            {
+                                <option value="@option">
+                                    @option
+                                </option>
+                            }
+                        </select>*@
+                        <br /><br />
+                        <!-- Button to save the node -->
+                        <button class="btn btn-primary"
+                                @onclick="SaveJob">
+                            Save
+                        </button>
+                        <!-- Only show delete button if not a new record -->
+                        @if (IsEditJob)
+                        {
+                            <!-- Button to delete the node -->
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteJob">
+                                Delete
+                            </button>
+                        }
+                        <br />
+                        <span style="color:red">@ErrorMessage</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <button class="btn btn-success" @onclick="CreateJob">Create Job</button>
+</AuthorizeView>
 
 @code {
+    private List<Job> ExistingJobs = new List<Job>();
+    private Job CurrentJob = new Job();
+    private bool IsEditJob = false;
+    private string ErrorMessage = string.Empty;
+    private bool ShowPopup = false;
+    private string DialogTitle = "New Job";
+    private string CurrentJobNodesNames = string.Empty;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await GetJobs();
+    }
+
+    private void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    private void CreateJob()
+    {
+        DialogTitle = "New Job";
+        ShowPopup = true;
+    }
+
+    private void DeleteJob()
+    {
+
+    }
+
+    private async void SaveJob()
+    {
+        //Edit
+        if (IsEditJob)
+        {
+            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+            var response = await httpClient.PutAsJsonAsync($"https://localhost:44383/api/jobs/{CurrentJob.Id}", CurrentJob);
+            if (response.IsSuccessStatusCode)
+            {
+                ShowPopup = false;
+            }
+            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+        }
+        else //New
+        {
+            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+            var node = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = CurrentJobNodesNames.Split(",") };
+
+            var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/nodes", node);
+            if (response.IsSuccessStatusCode)
+                ShowPopup = false;
+            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+        }
+
+        await GetJobs();
+    }
+
+    private async Task GetJobs()
+    {
+        if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+
+        ExistingJobs = await httpClient.GetFromJsonAsync<List<Job>>("https://localhost:44383/api/jobs");
+    }
+
+    private void EditJob(Job job)
+    {
+        DialogTitle = "Edit Job";
+        CurrentJob = job;
+        CurrentJobNodesNames = string.Join(",", job.Nodes);
+        ShowPopup = true;
+    }
 }

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using static JobScheduler.Areas.Identity.Pages.Account.LoginModel;
 
+#nullable enable
+
 namespace JobScheduler.Controllers.API
 {
     [Route("api/[controller]")]
