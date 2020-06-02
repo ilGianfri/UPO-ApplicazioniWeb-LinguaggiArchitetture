@@ -54,26 +54,20 @@
                         <!-- Only show Id if not a new user -->
                         @if (CurrentDetailsUser.User.Id != "")
                         {
-                            <p>@CurrentDetailsUser.User.Id</p>
+                            <p>Id: @CurrentDetailsUser.User.Id</p>
                         }
                         <!-- Only allow edit if a new user -->
-                        @if (CurrentDetailsUser.User.Id != "")
-                        {
-                            <p>@CurrentDetailsUser.User.UserName</p>
-                        }
-                        else
-                        {
-                            <input class="form-control" type="text"
+                       
+                        UserName: <input class="form-control" type="text"
                                    placeholder="UserName"
                                    @bind="CurrentDetailsUser.User.UserName" />
-                        }
-                        <input class="form-control" type="text"
+                        Email: <input class="form-control" type="text"
                                placeholder="Email"
                                @bind="CurrentDetailsUser.User.Email" />
-                        <input class="form-control" type="password"
+                        Password: <input class="form-control" type="password"
                                placeholder="Password"
                                @bind="CurrentDetailsUser.User.PasswordHash" />
-                        <select class="form-control"
+                        Role: <select class="form-control"
                                 @bind="@CurrentUserRole">
                             @foreach (IdentityRole option in AvailableRoles)
                             {

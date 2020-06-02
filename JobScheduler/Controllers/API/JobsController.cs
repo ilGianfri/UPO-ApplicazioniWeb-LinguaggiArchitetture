@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JobScheduler.Data;
@@ -33,7 +34,7 @@ namespace JobScheduler.Controllers.API
 
         // GET api/<JobsController>/5
         [HttpGet("{id}")]
-        public ActionResult Get(ulong id)
+        public ActionResult Get(int id)
         {
             Job job = _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
             if (job == null)
@@ -49,15 +50,22 @@ namespace JobScheduler.Controllers.API
             if (newJob == null)
                 return new EmptyResult();
 
-            _dbContext.Jobs.Add(newJob);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Jobs.Add(newJob);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
         }
 
         // PUT api/<JobsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(ulong id, [FromBody] Job modifiedJob)
+        public async Task<ActionResult> Put(int id, [FromBody] Job modifiedJob)
         {
             if (modifiedJob == null)
                 return BadRequest();
@@ -77,7 +85,7 @@ namespace JobScheduler.Controllers.API
 
         // DELETE api/<JobsController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(ulong id)
+        public async Task<ActionResult> Delete(int id)
         {
             _dbContext.Jobs.Remove(_dbContext.Jobs.FirstOrDefault(x => x.Id == id));
             await _dbContext.SaveChangesAsync();

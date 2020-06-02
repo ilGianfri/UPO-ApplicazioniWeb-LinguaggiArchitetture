@@ -54,27 +54,17 @@
                         <!-- Only show Id if not a new node -->
                         @if (CurrentJob.Id != 0)
                         {
-                            <p>@CurrentJob.Id</p>
+                            <p>Id: @CurrentJob.Id</p>
                         }
-                        <input class="form-control" type="text"
+                        Path: <input class="form-control" type="text"
                                placeholder="Path"
                                @bind="CurrentJob.Path" />
-                        <input class="form-control" type="text"
+                        Parameters: <input class="form-control" type="text"
                                placeholder="Parameters"
                                @bind="CurrentJob.Parameters" />
-                        <input class="form-control" type="text"
+                        Nodes: <input class="form-control" type="text"
                                placeholder="Nodes (numbers separated by , - e.g 1,2,3)"
                                @bind="CurrentJobNodesNames" />
-                        @*<select class="form-control"
-                                @bind="@CurrentNodeRole">
-                            @foreach (string option in AvailableRoles)
-                            {
-                                <option value="@option">
-                                    @option
-                                </option>
-                            }
-                        </select>*@
-                        <br /><br />
                         <!-- Button to save the node -->
                         <button class="btn btn-primary"
                                 @onclick="SaveJob">
@@ -151,7 +141,7 @@
 
             var node = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = CurrentJobNodesNames.Split(",") };
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/nodes", node);
+            var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/jobs", node);
             if (response.IsSuccessStatusCode)
                 ShowPopup = false;
             else ErrorMessage = $"Error: {response.ReasonPhrase}";

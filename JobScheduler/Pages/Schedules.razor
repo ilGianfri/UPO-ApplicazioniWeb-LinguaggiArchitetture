@@ -1,7 +1,9 @@
 ﻿@page "/schedules"
 @inject HttpClient httpClient
 
-<h3>Schedules</h3>
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Schedules</h3>
+</AuthorizeView>
 
 @code {
 

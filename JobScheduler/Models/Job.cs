@@ -5,7 +5,7 @@ namespace JobScheduler.Models
     public class Job
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public ulong Id { get; set; }
+        public int Id { get; set; }
         public string Path { get; set; }
         public string Parameters { get; set; }
         public string[] Nodes { get; set; }

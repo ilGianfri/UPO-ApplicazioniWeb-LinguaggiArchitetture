@@ -54,18 +54,18 @@
                         <!-- Only show Id if not a new node -->
                         @if (CurrentNode.Id != 0)
                         {
-                            <p>@CurrentNode.Id</p>
+                            <p>Id: @CurrentNode.Id</p>
                         }
-                        <input class="form-control" type="text"
+                        Name: <input class="form-control" type="text"
                                placeholder="Name"
                                @bind="CurrentNode.Name" />
-                        <input class="form-control" type="text"
+                        IP: <input class="form-control" type="text"
                                placeholder="IP"
                                @bind="CurrentNode.IPStr" />
-                        <input class="form-control" type="text"
+                        Group: <input class="form-control" type="text"
                                placeholder="Group (numbers separated by , - e.g 1,2,3)"
                                @bind="CurrentNodeGroup" />
-                        <select class="form-control"
+                        Role: <select class="form-control"
                                 @bind="@CurrentNodeRole">
                             @foreach (string option in AvailableRoles)
                             {
