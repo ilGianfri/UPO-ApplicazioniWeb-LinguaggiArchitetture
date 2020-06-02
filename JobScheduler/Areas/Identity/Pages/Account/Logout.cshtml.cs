@@ -19,8 +19,11 @@ namespace JobScheduler.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public void OnGet()
+        public async void OnGet()
         {
+            await _signInManager.SignOutAsync();
+
+            Response.Cookies.Delete("JWToken");
         }
 
         public async Task<IActionResult> OnPost(string returnUrl = null)

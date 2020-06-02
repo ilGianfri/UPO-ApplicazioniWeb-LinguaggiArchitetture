@@ -29,7 +29,7 @@ namespace JobScheduler.Controllers.API
         {
             List<IdentityUser> users = await _userManager.Users.ToListAsync();
             if (users == null)
-                return StatusCode(500);
+                return new EmptyResult();
 
             List<UserWithRole> result = new List<UserWithRole>();
             foreach (IdentityUser user in users)

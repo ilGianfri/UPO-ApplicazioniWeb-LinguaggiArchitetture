@@ -26,10 +26,8 @@ namespace JobScheduler.Controllers.API
         public ActionResult<IEnumerable<Job>> Get()
         {
             Job[] jobs = _dbContext.Jobs.ToArray();
-            if (jobs == null)
-                return new EmptyResult();
 
-            return Ok(jobs);
+            return jobs == null ? new EmptyResult() : (ActionResult<IEnumerable<Job>>)Ok(jobs);
         }
 
         // GET api/<JobsController>/5

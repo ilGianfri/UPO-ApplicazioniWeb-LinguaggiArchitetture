@@ -1,7 +1,7 @@
 ﻿<AuthorizeView>
     <Authorized>
         <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
-        <form method="post" action="Identity/Account/LogOut" asp-route-returnUrl="/">
+        <form action="Identity/Account/Logout">
             <button type="submit" class="nav-link btn btn-link">Logout</button>
         </form>
     </Authorized>
