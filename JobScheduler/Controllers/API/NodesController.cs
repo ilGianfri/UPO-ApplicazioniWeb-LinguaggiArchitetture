@@ -8,6 +8,7 @@ using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 #nullable enable
 
@@ -26,10 +27,10 @@ namespace JobScheduler.Controllers.API
 
         // GET: api/<NodesController>
         [HttpGet]
-        public ActionResult<IEnumerable<Node>> Get()
+        public async Task<ActionResult<IEnumerable<Node>>> Get()
         {
-            var nodes = _dbContext.Nodes.ToArray();
-            return Ok(nodes);
+            List<Node> nodes = await _dbContext.Nodes.ToListAsync();
+            return nodes == null ? new EmptyResult() : (ActionResult<IEnumerable<Node>>)Ok(nodes);
         }
 
         // GET api/<NodesController>/5

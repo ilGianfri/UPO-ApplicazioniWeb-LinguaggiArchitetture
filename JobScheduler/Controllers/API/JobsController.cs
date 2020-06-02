@@ -7,6 +7,7 @@ using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobScheduler.Controllers.API
 {
@@ -23,9 +24,9 @@ namespace JobScheduler.Controllers.API
 
         // GET: api/<JobsController>
         [HttpGet]
-        public ActionResult<IEnumerable<Job>> Get()
+        public async Task<ActionResult<IEnumerable<Job>>> Get()
         {
-            Job[] jobs = _dbContext.Jobs.ToArray();
+            List<Job> jobs = await _dbContext.Jobs.ToListAsync();
 
             return jobs == null ? new EmptyResult() : (ActionResult<IEnumerable<Job>>)Ok(jobs);
         }

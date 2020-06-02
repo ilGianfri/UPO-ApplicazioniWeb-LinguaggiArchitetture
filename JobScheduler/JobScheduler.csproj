@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-JobScheduler-1CB69CFE-33E9-4246-A89F-2DDC3AD4591A</UserSecretsId>
+    <Configurations>Debug;Release;Master-Debug;Master-Release;Slave-Debug;Slave-Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

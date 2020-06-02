@@ -1,21 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using JobScheduler.Data;
 using JobScheduler.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SchedulesController : ControllerBase
     {
+        private ApplicationDbContext _dbContext;
+        public SchedulesController(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         // GET: api/<SchedulesController>
         [HttpGet]
-        public ActionResult<string> Get()
+        public async Task<ActionResult<IEnumerable<Schedule>>> Get()
         {
-            return Ok(new string[] { "value1", "value2" });
+            List<Job> schedules = await _dbContext.Jobs.ToListAsync();
+
+            return schedules == null ? new EmptyResult() : (ActionResult<IEnumerable<Schedule>>)Ok(schedules);
         }
 
         // GET api/<SchedulesController>/5
