@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
@@ -25,35 +26,59 @@ namespace JobScheduler.Controllers.API
         public async Task<ActionResult<IEnumerable<Schedule>>> Get()
         {
             List<Job> schedules = await _dbContext.Jobs.ToListAsync();
-
             return schedules == null ? new EmptyResult() : (ActionResult<IEnumerable<Schedule>>)Ok(schedules);
         }
 
         // GET api/<SchedulesController>/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Schedule> Get(int id)
         {
-            return Ok("value");
+            Schedule result = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
         // POST api/<SchedulesController>
         [HttpPost]
-        public ActionResult Post([FromBody] Schedule value)
+        public async Task<ActionResult> Post([FromBody] Schedule schedule)
         {
+            if (schedule == null)
+                return BadRequest();
+
+            _dbContext.Schedules.Add(schedule);
+            await _dbContext.SaveChangesAsync();
+
             return Ok();
         }
 
         // PUT api/<SchedulesController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Schedule value)
+        public async Task<ActionResult<Schedule>> Put(int id, [FromBody] Schedule modifiedSchedule)
         {
-            return Ok();
+            if (modifiedSchedule == null)
+                return BadRequest();
+
+            Schedule schedule = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
+            if (schedule != null)
+            {
+                schedule = modifiedSchedule;
+                await _dbContext.SaveChangesAsync();
+
+                return Ok(schedule);
+            }
+
+            return NotFound();
         }
 
         // DELETE api/<SchedulesController>/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
+            _dbContext.Schedules.Remove(_dbContext.Schedules.FirstOrDefault(x => x.Id == id));
+            await _dbContext.SaveChangesAsync();
+
             return Ok();
         }
     }

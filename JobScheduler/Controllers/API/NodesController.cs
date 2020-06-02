@@ -48,22 +48,15 @@ namespace JobScheduler.Controllers.API
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Node node)
         {
-            try
-            {
-                if (node == null)
-                    return BadRequest();
+            if (node == null)
+                return BadRequest();
 
-                node.IP = IPAddress.Parse(node.IPStr);
+            node.IP = IPAddress.Parse(node.IPStr);
 
-                _dbContext.Nodes.Add(node);
-                await _dbContext.SaveChangesAsync();
+            _dbContext.Nodes.Add(node);
+            await _dbContext.SaveChangesAsync();
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok();
         }
 
         // PUT api/<NodesController>/5
