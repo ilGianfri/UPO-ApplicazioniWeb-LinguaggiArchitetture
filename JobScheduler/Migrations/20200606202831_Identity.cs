@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -67,9 +66,11 @@ namespace JobScheduler.Migrations
                 name: "Jobs",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Path = table.Column<string>(nullable: true),
                     Parameters = table.Column<string>(nullable: true),
+                    Nodes = table.Column<string[]>(nullable: true),
                     Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -78,10 +79,27 @@ namespace JobScheduler.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Nodes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(nullable: false),
+                    IPStr = table.Column<string>(nullable: false),
+                    Group = table.Column<int[]>(nullable: false),
+                    Role = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Nodes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     When = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -195,29 +213,6 @@ namespace JobScheduler.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Nodes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(nullable: true),
-                    IP = table.Column<IPAddress>(nullable: true),
-                    Group = table.Column<int[]>(nullable: true),
-                    Role = table.Column<int>(nullable: false),
-                    JobId = table.Column<decimal>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Nodes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Nodes_Jobs_JobId",
-                        column: x => x.JobId,
-                        principalTable: "Jobs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -254,11 +249,6 @@ namespace JobScheduler.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Nodes_JobId",
-                table: "Nodes",
-                column: "JobId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -282,6 +272,9 @@ namespace JobScheduler.Migrations
                 name: "JobHistory");
 
             migrationBuilder.DropTable(
+                name: "Jobs");
+
+            migrationBuilder.DropTable(
                 name: "Nodes");
 
             migrationBuilder.DropTable(
@@ -292,9 +285,6 @@ namespace JobScheduler.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Jobs");
         }
     }
 }

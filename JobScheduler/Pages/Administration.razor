@@ -57,18 +57,24 @@
                             <p>Id: @CurrentDetailsUser.User.Id</p>
                         }
                         <!-- Only allow edit if a new user -->
-                       
-                        UserName: <input class="form-control" type="text"
-                                   placeholder="UserName"
-                                   @bind="CurrentDetailsUser.User.UserName" />
+                        @if (CurrentDetailsUser.User.Id != "")
+                        {
+                            <p>@CurrentDetailsUser.User.UserName</p>
+                        }
+                        else
+                        {
+                            UserName: <input class="form-control" type="text"
+                                         placeholder="UserName"
+                                         @bind="CurrentDetailsUser.User.UserName" />
+                        }
                         Email: <input class="form-control" type="text"
-                               placeholder="Email"
-                               @bind="CurrentDetailsUser.User.Email" />
+                                      placeholder="Email"
+                                      @bind="CurrentDetailsUser.User.Email" />
                         Password: <input class="form-control" type="password"
-                               placeholder="Password"
-                               @bind="CurrentDetailsUser.User.PasswordHash" />
+                                         placeholder="Password"
+                                         @bind="CurrentDetailsUser.User.PasswordHash" />
                         Role: <select class="form-control"
-                                @bind="@CurrentUserRole">
+                                      @bind="@CurrentUserRole">
                             @foreach (IdentityRole option in AvailableRoles)
                             {
                                 <option value="@option.Name">
@@ -113,13 +119,15 @@
         // Tracks the selected role for the currently selected user
         private string CurrentUserRole { get; set; }
         // Possible user roles
-        private  List<IdentityRole> AvailableRoles = new List<IdentityRole>();
+        private List<IdentityRole> AvailableRoles = new List<IdentityRole>();
         private bool IsEditUser = false;
 
         private void ClosePopup()
         {
             ShowPopup = false;
             IsEditUser = false;
+            CurrentDetailsUser = new UserWithRole();
+            ErrorMessage = string.Empty;
         }
 
         protected override async Task OnInitializedAsync()
@@ -174,7 +182,7 @@
 
                 if (response.IsSuccessStatusCode)
                 {
-                    ShowPopup = false;
+                    ClosePopup();
                 }
                 else ErrorMessage = "Error: Something went wrong while editing this user.";
             }
@@ -187,7 +195,7 @@
 
                 var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/users", new UserWithRole() { User = user, Role = CurrentUserRole });
                 if (response.IsSuccessStatusCode)
-                    ShowPopup = false;
+                    ClosePopup();
                 else ErrorMessage = "Error: Something went wrong.";
             }
 

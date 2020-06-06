@@ -23,13 +23,14 @@ namespace JobScheduler.Data
         {
             const string email = "admin@jobscheduler.com";
             string password = Configuration.GetValue<string>("DefaultAdminPassword");
+            const string username = "admin";
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 user = new IdentityUser
                 {
-                    UserName = email,
+                    UserName = username,
                     Email = email
                 };
 

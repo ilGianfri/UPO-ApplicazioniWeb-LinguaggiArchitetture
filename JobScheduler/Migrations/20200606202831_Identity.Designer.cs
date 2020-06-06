@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JobScheduler.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200602102033_Job")]
-    partial class Job
+    [Migration("20200606202831_Identity")]
+    partial class Identity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,9 +96,10 @@ namespace JobScheduler.Migrations
 
             modelBuilder.Entity("JobScheduler.Models.Schedule", b =>
                 {
-                    b.Property<decimal>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("numeric(20,0)");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<DateTime>("When")
                         .HasColumnType("timestamp without time zone");
