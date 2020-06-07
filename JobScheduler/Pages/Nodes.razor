@@ -146,7 +146,6 @@
             else ErrorMessage = "Error: Could not create this node.";
         }
 
-        await GetNodes();
     }
 
     private async void DeleteNode()
@@ -155,17 +154,22 @@
         ClosePopup();
     }
 
-    private void ClosePopup()
+    private async void ClosePopup()
     {
         ShowPopup = false;
         IsEditNode = false;
         CurrentNode = new Node();
         ErrorMessage = string.Empty;
+
+        StateHasChanged();
+
+        await GetNodes();
     }
 
     private async Task GetNodes()
     {
         ExistingNodes = (await nodesMethods.GetNodesAsync()).ToList();
+        StateHasChanged();
     }
 
     private void EditNode(Node node)

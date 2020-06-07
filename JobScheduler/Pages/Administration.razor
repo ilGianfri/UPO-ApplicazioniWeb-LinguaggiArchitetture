@@ -120,12 +120,16 @@
         private List<IdentityRole> AvailableRoles = new List<IdentityRole>();
         private bool IsEditUser = false;
 
-        private void ClosePopup()
+        private async void ClosePopup()
         {
             ShowPopup = false;
             IsEditUser = false;
             CurrentDetailsUser = new UserWithRole();
             ErrorMessage = string.Empty;
+
+            StateHasChanged();
+
+            await GetUsers();
         }
 
         protected override async Task OnInitializedAsync()
@@ -137,6 +141,8 @@
         private async Task GetUsers()
         {
             Users = (await userMethods.GetUsersAsync()).ToList();
+
+            StateHasChanged();
         }
 
         private void AddNewUser()

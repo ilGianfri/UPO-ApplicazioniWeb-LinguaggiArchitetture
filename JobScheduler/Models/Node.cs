@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
-#nullable enable
-
 namespace JobScheduler.Models
 {
     public class Node
