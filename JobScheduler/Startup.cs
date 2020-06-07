@@ -13,6 +13,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
+using JobScheduler.Controllers;
 
 namespace JobScheduler
 {
@@ -43,6 +44,7 @@ namespace JobScheduler
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpContextAccessor();
             services.AddSingleton<HttpClient>();
+            services.AddScoped<UserMethods>();
 
             //services.addswaggergen(c =>
             //{

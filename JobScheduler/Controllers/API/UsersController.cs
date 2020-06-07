@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JobScheduler.Models;
@@ -8,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-#nullable enable
-
 namespace JobScheduler.Controllers.API
 {
     [Route("api/[controller]")]
@@ -18,26 +17,22 @@ namespace JobScheduler.Controllers.API
     public class UsersController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserMethods _userMethods;
         public UsersController(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
+            _userMethods = new UserMethods(_userManager);
         }
 
         // GET: api/<UsersController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithRole>>> Get()
         {
-            List<IdentityUser> users = await _userManager.Users.ToListAsync();
-            if (users == null)
-                return new EmptyResult();
+            var result = await _userMethods.GetUsersAsync();
+            if (result != null)
+                return Ok(result);
 
-            List<UserWithRole> result = new List<UserWithRole>();
-            foreach (IdentityUser user in users)
-            {
-                IList<string> roles = await _userManager.GetRolesAsync(user);
-                result.Add(new UserWithRole() { User = user, Role = roles.FirstOrDefault() });
-            }
-            return Ok(result);
+            return NotFound();
         }
 
         // GET api/<UsersController>/5
@@ -47,14 +42,9 @@ namespace JobScheduler.Controllers.API
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            IdentityUser user = await _userManager.FindByIdAsync(id);
+            UserWithRole user = await _userMethods.GetUserByIdAsync(id);
             if (user != null)
-            {
-                IList<string> roles = await _userManager.GetRolesAsync(user);
-                UserWithRole result = new UserWithRole() { User = user, Role = roles.FirstOrDefault() };
-
-                return Ok(result);
-            }
+                return Ok(user);
 
             return NotFound();
         }
@@ -66,12 +56,10 @@ namespace JobScheduler.Controllers.API
             if (newUser == null)
                 return BadRequest();
 
-            var result = await _userManager.CreateAsync(newUser.User, newUser.User.PasswordHash);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(newUser.User, newUser.Role);
+            var result = await _userMethods.CreateUserAsync(newUser);
+            if (result)
                 return StatusCode(201);
-            }
+
             return StatusCode(500);
         }
 
@@ -82,32 +70,9 @@ namespace JobScheduler.Controllers.API
             if (modifiedUser == null)
                 return BadRequest();
 
-            var user = await _userManager.FindByIdAsync(id);
-            if (user != null)
+            var edited = await _userMethods.EditUserAsync(id, modifiedUser);
+            if (edited != null)
             {
-                //Update the email
-                if (user.Email != modifiedUser.User.Email)
-                {
-                    user.Email = modifiedUser.User.Email;
-                    await _userManager.UpdateAsync(user);
-                }
-
-                //The password has been changed
-                if (user.PasswordHash != modifiedUser.User.PasswordHash)
-                {
-                    var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    await _userManager.ResetPasswordAsync(user, resetToken, modifiedUser.User.PasswordHash);
-                }
-
-                //Role has been changed
-                if (!await _userManager.IsInRoleAsync(user, modifiedUser.Role))
-                {
-                    //Remove old role
-                    await _userManager.RemoveFromRoleAsync(user, (await _userManager.GetRolesAsync(user)).FirstOrDefault());
-                    //Apply new one
-                    await _userManager.AddToRoleAsync(user, modifiedUser.Role);
-                }
-
                 return Ok();
             }
 
@@ -121,11 +86,11 @@ namespace JobScheduler.Controllers.API
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var user = await _userManager.FindByIdAsync(id);
-            if (user != null)
+            var deleted = await _userMethods.DeleteUserAsync(id);
+            if (deleted != null)
             {
-                var deleteResult = await _userManager.DeleteAsync(user);
-                return deleteResult.Succeeded ? Ok() : StatusCode(500);
+                if (deleted.HasValue)
+                    return Ok();
             }
 
             return NotFound();
