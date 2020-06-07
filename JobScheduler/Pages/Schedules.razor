@@ -1,12 +1,171 @@
 ﻿@page "/schedules"
-@inject HttpClient httpClient
+@inject SchedulesMethods schedulesMethods
+@inject JobsMethods jobMethods
 
-<AuthorizeView Roles="Admin, Editor">
-    <h3>Schedules</h3>
+    <AuthorizeView Roles="Admin, Editor">
+        <h3>Schedules</h3>
 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>When</th>
+                    <th>Job</th>
+                    <th>Nodes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Schedule schedule in ExistingSchedules)
+                {
+                    <tr>
+                        <td>@schedule.Id</td>
+                        <td>@schedule.When</td>
+                        <td>@schedule.Job</td>
+                        <td>
+                            <button class="btn btn-primary"
+                                    @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-</AuthorizeView>
+        @if (ShowPopup)
+        {
+            <!-- This is the popup to create or edit a schedule -->
+            <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">@DialogTitle</h3>
+                            <!-- Button to close the popup -->
+                            <button type="button" class="close"
+                                    @onclick="ClosePopup">
+                                <span aria-hidden="true">X</span>
+                            </button>
+                        </div>
+                        <!-- Edit form for the current schedule -->
+                        <div class="modal-body">
+                            <!-- Only show Id if not a new schedule -->
+                            @if (CurrentSchedule.Id != 0)
+                            {
+                                <p>Id: @CurrentSchedule.Id</p>
+                            }
+                            When: <input class="form-control" type="datetime"
+                                         placeholder="Path"
+                                         @bind="CurrentSchedule.When" />
+
+                            Job: <select class="form-control">
+                                @foreach (Job job in AvailableJobs)
+                                {
+                                    <option value="@job.Path">
+                                        @job.Path
+                                    </option>
+                                }
+                            </select>
+                            <!-- Button to save the schedule -->
+                            <button class="btn btn-primary"
+                                    @onclick="SaveSchedule">
+                                Save
+                            </button>
+                            <!-- Only show delete button if not a new record -->
+                            @if (IsEditSchedule)
+                            {
+                                <!-- Button to delete the schedule -->
+                                <button class="btn btn-danger"
+                                        @onclick="DeleteSchedule">
+                                    Delete
+                                </button>
+                            }
+                            <br />
+                            <span style="color:red">@ErrorMessage</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <button class="btn btn-success" @onclick="CreateSchedule">Create Schedule</button>
+    </AuthorizeView>
 
 @code {
+    private List<Schedule> ExistingSchedules = new List<Schedule>();
+    private Schedule CurrentSchedule = new Schedule();
+    private bool IsEditSchedule { get; set; } = false;
+    private bool ShowPopup { get; set; } = false;
+    private string DialogTitle { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+    private Job ScheduleJob = new Job();
+    private List<Job> AvailableJobs = new List<Job>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        AvailableJobs = (await jobMethods.GetJobsAsync()).ToList();
+
+        GetSchedules();
+    }
+
+    private async void GetSchedules()
+    {
+        ExistingSchedules = (await schedulesMethods.GetSchedulesAsync()).ToList();
+
+        StateHasChanged();
+    }
+
+    private void ClosePopup()
+    {
+        ShowPopup = false;
+        IsEditSchedule = false;
+        ErrorMessage = string.Empty;
+        ScheduleJob = new Job();
+        CurrentSchedule = new Schedule();
+
+        StateHasChanged();
+
+        GetSchedules();
+    }
+
+    private void CreateSchedule()
+    {
+        DialogTitle = "New Schedule";
+        ShowPopup = true;
+    }
+
+    private async void SaveSchedule()
+    {
+        //Edit
+        if (IsEditSchedule)
+        {
+            var response = await schedulesMethods.EditScheduleAsync(CurrentSchedule.Id, CurrentSchedule);
+            if (response != null)
+            {
+                ClosePopup();
+            }
+            else ErrorMessage = $"Error: Could not edit this schedule";
+        }
+        else //New
+        {
+            var schedule = new Schedule { Job = ScheduleJob, When = CurrentSchedule.When };
+
+            var response = await schedulesMethods.CreateScheduleAsync(schedule);
+            if (response != null)
+                ClosePopup();
+            else ErrorMessage = $"Error: Could not create this schedule";
+        }
+    }
+
+    private async void DeleteSchedule()
+    {
+        await schedulesMethods.DeleteScheduleAsync(CurrentSchedule.Id);
+        ClosePopup();
+    }
+
+    private void EditSchedule(Schedule schedule)
+    {
+        DialogTitle = "Edit Schedule";
+        CurrentSchedule = schedule;
+        ShowPopup = true;
+    }
 }

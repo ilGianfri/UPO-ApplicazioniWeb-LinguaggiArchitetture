@@ -48,6 +48,7 @@ namespace JobScheduler
             services.AddScoped<UserMethods>();
             services.AddScoped<NodesMethods>();
             services.AddScoped<JobsMethods>();
+            services.AddScoped<SchedulesMethods>();
 
             services.AddScoped<DataSeed>();
 
