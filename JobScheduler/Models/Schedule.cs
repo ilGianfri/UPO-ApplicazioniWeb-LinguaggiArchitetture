@@ -14,5 +14,6 @@ namespace JobScheduler.Models
         public int Id { get; set; }
         public DateTime When { get; set; }
         public Job Job { get; set;  }
+        public string Cron { get; set; }
     }
 }

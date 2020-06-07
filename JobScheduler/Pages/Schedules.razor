@@ -18,17 +18,23 @@
             <tbody>
                 @foreach (Schedule schedule in ExistingSchedules)
                 {
-                    <tr>
-                        <td>@schedule.Id</td>
-                        <td>@schedule.When</td>
-                        <td>@schedule.Job</td>
-                        <td>
-                            <button class="btn btn-primary"
-                                    @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
-                                Edit
-                            </button>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>@schedule.Id</td>
+                    <td>@schedule.When</td>
+                    <td>@schedule.Job</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                            Edit
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                            Run Now
+                        </button>
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>
@@ -54,10 +60,9 @@
                             {
                                 <p>Id: @CurrentSchedule.Id</p>
                             }
-                            When: <input class="form-control" type="datetime"
-                                         placeholder="Path"
-                                         @bind="CurrentSchedule.When" />
-
+                            When: <input class="form-control" type="text"
+                                         placeholder="CRON"
+                                         @bind="CurrentSchedule.Cron" />
                             Job: <select class="form-control">
                                 @foreach (Job job in AvailableJobs)
                                 {

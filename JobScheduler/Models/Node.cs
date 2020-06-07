@@ -20,7 +20,7 @@ namespace JobScheduler.Models
         public string IPStr { get; set; } = string.Empty;
 
         [NotMapped]
-        public IPAddress? IP { get; set; }
+        public IPAddress IP { get; set; }
         public int[] Group { get; set; }
         public NodeRole Role { get; set; }
     }
