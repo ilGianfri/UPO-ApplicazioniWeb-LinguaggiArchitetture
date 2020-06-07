@@ -152,6 +152,7 @@
     private async void DeleteNode()
     {
         await nodesMethods.DeleteNodeAsync(CurrentNode.Id);
+        ClosePopup();
     }
 
     private void ClosePopup()
@@ -159,6 +160,7 @@
         ShowPopup = false;
         IsEditNode = false;
         CurrentNode = new Node();
+        ErrorMessage = string.Empty;
     }
 
     private async Task GetNodes()

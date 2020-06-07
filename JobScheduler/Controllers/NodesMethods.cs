@@ -33,7 +33,7 @@ namespace JobScheduler.Controllers
             _dbContext.Nodes.Add(newNode);
             var changes = await _dbContext.SaveChangesAsync();
 
-            return changes > 1;
+            return changes > 0;
         }
 
         public async Task<Node?> EditNodeAsync(int id, Node editedNode)
