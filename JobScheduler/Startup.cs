@@ -44,7 +44,9 @@ namespace JobScheduler
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHttpContextAccessor();
             services.AddSingleton<HttpClient>();
+
             services.AddScoped<UserMethods>();
+            services.AddScoped<NodesMethods>();
 
             //services.addswaggergen(c =>
             //{

@@ -1,6 +1,5 @@
 ﻿@page "/nodes"
-@inject HttpClient httpClient
-@inject IHttpContextAccessor httpContextAccessor
+@inject NodesMethods nodesMethods
 
 <AuthorizeView Roles="Admin, Editor">
     <h3>Nodes</h3>
@@ -127,30 +126,24 @@
     {
         if (IsEditNode)
         {
-            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
             CurrentNode.IP = null;
             CurrentNode.Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
-            var response = await httpClient.PutAsJsonAsync($"https://localhost:44383/api/nodes/{CurrentNode.Id}", CurrentNode);
-            if (response.IsSuccessStatusCode)
+            var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
+            if (response != null)
             {
-                ShowPopup = false;
+                ClosePopup();
             }
-            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+            else ErrorMessage = "Error: Could not edit this node.";
         }
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
             var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray(), Role = CurrentNode.Role };
 
-            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-            var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/nodes", node);
-            if (response.IsSuccessStatusCode)
-                ShowPopup = false;
-            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+            var response = await nodesMethods.CreateNodeAsync(node);
+            if (response)
+                ClosePopup();
+            else ErrorMessage = "Error: Could not create this node.";
         }
 
         await GetNodes();
@@ -158,24 +151,19 @@
 
     private async void DeleteNode()
     {
-        if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-        var response = await httpClient.DeleteAsync($"https://localhost:44383/api/nodes/{CurrentNode.Id}");
+        await nodesMethods.DeleteNodeAsync(CurrentNode.Id);
     }
 
     private void ClosePopup()
     {
         ShowPopup = false;
         IsEditNode = false;
+        CurrentNode = new Node();
     }
 
     private async Task GetNodes()
     {
-        if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-        ExistingNodes = await httpClient.GetFromJsonAsync<List<Node>>("https://localhost:44383/api/nodes");
+        ExistingNodes = (await nodesMethods.GetNodesAsync()).ToList();
     }
 
     private void EditNode(Node node)

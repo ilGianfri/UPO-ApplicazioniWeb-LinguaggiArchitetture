@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-#nullable enable
-
 namespace JobScheduler.Controllers.API
 {
     [Route("api/[controller]")]
@@ -20,16 +18,18 @@ namespace JobScheduler.Controllers.API
     public class NodesController : ControllerBase
     {
         private ApplicationDbContext _dbContext;
-        public NodesController(ApplicationDbContext dbContext)
+        private NodesMethods _nodesMethods;
+        public NodesController(ApplicationDbContext dbContext, NodesMethods nodesMethods)
         {
             _dbContext = dbContext;
+            _nodesMethods = nodesMethods;
         }
 
         // GET: api/<NodesController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Node>>> Get()
         {
-            List<Node> nodes = await _dbContext.Nodes.ToListAsync();
+            var nodes = await _nodesMethods.GetNodesAsync();
             return nodes == null ? new EmptyResult() : (ActionResult<IEnumerable<Node>>)Ok(nodes);
         }
 
@@ -37,7 +37,7 @@ namespace JobScheduler.Controllers.API
         [HttpGet("{id}")]
         public ActionResult<Node> Get(int id)
         {
-            Node result = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
+            Node result = _nodesMethods.GetNodeByIdAsync(id);
             if (result == null)
                 return NotFound();
 
@@ -53,10 +53,9 @@ namespace JobScheduler.Controllers.API
 
             node.IP = IPAddress.Parse(node.IPStr);
 
-            _dbContext.Nodes.Add(node);
-            await _dbContext.SaveChangesAsync();
+            bool created = await _nodesMethods.CreateNodeAsync(node);
 
-            return Ok();
+            return created ? StatusCode(201) : StatusCode(500);
         }
 
         // PUT api/<NodesController>/5
@@ -66,18 +65,9 @@ namespace JobScheduler.Controllers.API
             if (modifiedNode == null)
                 return BadRequest();
 
-            Node node = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
+            Node node = await _nodesMethods.EditNodeAsync(id, modifiedNode);
             if (node != null)
-            {
-                node.IPStr = modifiedNode.IPStr;
-                node.Group = modifiedNode.Group;
-                node.Name = modifiedNode.Name;
-                node.Role = modifiedNode.Role;
-
-                await _dbContext.SaveChangesAsync();
-
                 return Ok(node);
-            }
 
             return NotFound();
         }
@@ -86,8 +76,7 @@ namespace JobScheduler.Controllers.API
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            _dbContext.Nodes.Remove(_dbContext.Nodes.FirstOrDefault(x => x.Id == id));
-            await _dbContext.SaveChangesAsync();
+            await _nodesMethods.DeleteNodeAsync(id);
 
             return Ok();
         }

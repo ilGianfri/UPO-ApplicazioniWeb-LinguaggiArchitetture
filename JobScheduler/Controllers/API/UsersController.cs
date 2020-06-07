@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using JobScheduler.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JobScheduler.Controllers.API
 {
@@ -18,10 +15,10 @@ namespace JobScheduler.Controllers.API
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly UserMethods _userMethods;
-        public UsersController(UserManager<IdentityUser> userManager)
+        public UsersController(UserManager<IdentityUser> userManager, UserMethods userMethods)
         {
             _userManager = userManager;
-            _userMethods = new UserMethods(_userManager);
+            _userMethods = userMethods;
         }
 
         // GET: api/<UsersController>
