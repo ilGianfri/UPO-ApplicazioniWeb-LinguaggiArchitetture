@@ -17,27 +17,27 @@ namespace JobScheduler.Controllers.API
     public class JobsController : ControllerBase
     {
         private ApplicationDbContext _dbContext;
-        public JobsController(ApplicationDbContext dbContext)
+        private JobsMethods _jobMethods;
+        public JobsController(ApplicationDbContext dbContext, JobsMethods jobMethods)
         {
             _dbContext = dbContext;
+            _jobMethods = jobMethods;
         }
 
         // GET: api/<JobsController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Job>>> Get()
         {
-            List<Job> jobs = await _dbContext.Jobs.ToListAsync();
-
-            return jobs == null ? new EmptyResult() : (ActionResult<IEnumerable<Job>>)Ok(jobs);
+            return Ok((await _jobMethods.GetJobsAsync()).ToList());
         }
 
         // GET api/<JobsController>/5
         [HttpGet("{id}")]
         public ActionResult Get(int id)
         {
-            Job job = _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
+            Job job = _jobMethods.GetJobByIdAsync(id);
             if (job == null)
-                return new EmptyResult();
+                return NotFound();
 
             return Ok(job);
         }
@@ -47,12 +47,11 @@ namespace JobScheduler.Controllers.API
         public async Task<ActionResult> Post([FromBody] Job newJob)
         {
             if (newJob == null)
-                return new EmptyResult();
+                return BadRequest();
 
             try
             {
-                _dbContext.Jobs.Add(newJob);
-                await _dbContext.SaveChangesAsync();
+                await _jobMethods.CreateJobAsync(newJob);
             }
             catch (Exception ex)
             {
@@ -69,15 +68,9 @@ namespace JobScheduler.Controllers.API
             if (modifiedJob == null)
                 return BadRequest();
 
-            Job job = _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
+            Job job = await _jobMethods.EditJobAsync(id, modifiedJob);
             if (job != null)
-            {
-                job = modifiedJob;
-
-                await _dbContext.SaveChangesAsync();
-
                 return Ok(job);
-            }
 
             return NotFound();
         }
@@ -86,9 +79,7 @@ namespace JobScheduler.Controllers.API
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            _dbContext.Jobs.Remove(_dbContext.Jobs.FirstOrDefault(x => x.Id == id));
-            await _dbContext.SaveChangesAsync();
-
+            await _jobMethods.DeleteJobAsync(id);
             return Ok();
         }
     }

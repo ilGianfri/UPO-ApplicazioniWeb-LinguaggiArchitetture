@@ -47,6 +47,9 @@ namespace JobScheduler
 
             services.AddScoped<UserMethods>();
             services.AddScoped<NodesMethods>();
+            services.AddScoped<JobsMethods>();
+
+            services.AddScoped<DataSeed>();
 
             //services.addswaggergen(c =>
             //{
@@ -69,7 +72,6 @@ namespace JobScheduler
             services.AddMemoryCache();
             services.AddSession();
 
-            services.AddScoped<DataSeed>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -109,7 +109,7 @@
         //List of users
         private List<UserWithRole> Users = new List<UserWithRole>();
         //To show or hide the popup
-        private bool ShowPopup = false;
+        private bool ShowPopup { get; set; } = false;
         // Property used to add or edit the currently selected user
         private UserWithRole CurrentDetailsUser = new UserWithRole();
         //To show erros

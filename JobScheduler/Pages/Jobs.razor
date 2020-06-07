@@ -1,6 +1,7 @@
 ﻿@page "/jobs"
 @inject HttpClient httpClient
 @inject IHttpContextAccessor httpContextAccessor
+@inject JobsMethods jobsMethods
 
 <AuthorizeView Roles="Admin, Editor">
     <h3>Jobs</h3>
@@ -92,20 +93,28 @@
 @code {
     private List<Job> ExistingJobs = new List<Job>();
     private Job CurrentJob = new Job();
-    private bool IsEditJob = false;
-    private string ErrorMessage = string.Empty;
-    private bool ShowPopup = false;
-    private string DialogTitle = "New Job";
-    private string CurrentJobNodesNames = string.Empty;
+    private bool IsEditJob { get; set; } = false;
+    private string ErrorMessage { get; set; } = string.Empty;
+    private bool ShowPopup { get; set; } = false;
+    private string DialogTitle { get; set; } = "New Job";
+    private string CurrentJobNodesNames { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         await GetJobs();
     }
 
-    private void ClosePopup()
+    private async void ClosePopup()
     {
         ShowPopup = false;
+        CurrentJob = new Job();
+        IsEditJob = false;
+        ErrorMessage = string.Empty;
+        CurrentJobNodesNames = string.Empty;
+
+        StateHasChanged();
+
+        await GetJobs();
     }
 
     private void CreateJob()
@@ -114,9 +123,10 @@
         ShowPopup = true;
     }
 
-    private void DeleteJob()
+    private async void DeleteJob()
     {
-
+        await jobsMethods.DeleteJobAsync(CurrentJob.Id);
+        ClosePopup();
     }
 
     private async void SaveJob()
@@ -124,38 +134,29 @@
         //Edit
         if (IsEditJob)
         {
-            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
-
-            var response = await httpClient.PutAsJsonAsync($"https://localhost:44383/api/jobs/{CurrentJob.Id}", CurrentJob);
-            if (response.IsSuccessStatusCode)
+            var response = await jobsMethods.EditJobAsync(CurrentJob.Id, CurrentJob);
+            if (response != null)
             {
-                ShowPopup = false;
+                ClosePopup();
             }
-            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+            else ErrorMessage = $"Error: Could not edit this job";
         }
         else //New
         {
-            if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = CurrentJobNodesNames.Split(",") };
 
-            var node = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = CurrentJobNodesNames.Split(",") };
-
-            var response = await httpClient.PostAsJsonAsync("https://localhost:44383/api/jobs", node);
-            if (response.IsSuccessStatusCode)
-                ShowPopup = false;
-            else ErrorMessage = $"Error: {response.ReasonPhrase}";
+            var response = await jobsMethods.CreateJobAsync(job);
+            if (response)
+                ClosePopup();
+            else ErrorMessage = $"Error: Could not create this job";
         }
-
-        await GetJobs();
     }
 
     private async Task GetJobs()
     {
-        if (!httpClient.DefaultRequestHeaders.Contains("Authorization"))
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {httpContextAccessor.HttpContext.Request.Cookies["JWToken"]}");
+        ExistingJobs = (await jobsMethods.GetJobsAsync()).ToList();
 
-        ExistingJobs = await httpClient.GetFromJsonAsync<List<Job>>("https://localhost:44383/api/jobs");
+        StateHasChanged();
     }
 
     private void EditJob(Job job)
