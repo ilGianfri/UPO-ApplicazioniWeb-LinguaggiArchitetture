@@ -6,11 +6,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
-using System.Text.Json;
 using JobScheduler.Models;
 using Microsoft.AspNetCore.Http;
-using System.Text;
+using JobScheduler.Controllers;
+using Microsoft.Extensions.Configuration;
 
 namespace JobScheduler.Areas.Identity.Pages.Account
 {
@@ -20,14 +19,14 @@ namespace JobScheduler.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IConfiguration _configuration;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, 
-            ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _configuration = configuration;
         }
 
         [BindProperty]
@@ -80,19 +79,16 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
 
-                    HttpClient client = new HttpClient();
-                    HttpResponseMessage response = await client.PostAsync("https://localhost:44383/api/tokens", new StringContent(JsonSerializer.Serialize(Input), Encoding.UTF8, "application/json"));
-                    if (response.IsSuccessStatusCode)
+                    JwtToken response = await new TokenMethods(_userManager, _configuration).CreateToken(Input);
+                    if (response != null)
                     {
-                        var content = await response.Content.ReadAsStringAsync();
-                        string jwtToken = JsonSerializer.Deserialize<JwtToken>(content).Token;
-                        if (string.IsNullOrEmpty(jwtToken))
+                        if (string.IsNullOrEmpty(response.Token))
                         {
                             ModelState.AddModelError(string.Empty, "Cannot get a valid token. Try again.");
                             return Page();
                         }
                         
-                        Response.Cookies.Append("JWToken", jwtToken);
+                        Response.Cookies.Append("JWToken", response.Token);
                         //HttpContext.Session.SetString("JWToken", jwtToken);
                     }
 

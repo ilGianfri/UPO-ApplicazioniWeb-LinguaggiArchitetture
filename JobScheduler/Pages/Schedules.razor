@@ -20,7 +20,7 @@
                 {
                 <tr>
                     <td>@schedule.Id</td>
-                    <td>@schedule.When</td>
+                    <td>@if (!string.IsNullOrEmpty(schedule.Cron)) {<span>@ExpressionDescriptor.GetDescription(schedule.Cron);</span>}</td>
                     <td>@schedule.Job</td>
                     <td>
                         <button class="btn btn-primary"
@@ -152,7 +152,7 @@
         }
         else //New
         {
-            var schedule = new Schedule { Job = ScheduleJob, When = CurrentSchedule.When };
+            var schedule = new Schedule { Job = ScheduleJob, Cron = CurrentSchedule.Cron };
 
             var response = await schedulesMethods.CreateScheduleAsync(schedule);
             if (response != null)
