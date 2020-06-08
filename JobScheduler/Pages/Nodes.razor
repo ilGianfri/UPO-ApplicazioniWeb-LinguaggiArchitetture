@@ -22,7 +22,7 @@
                     <td>@node.Id</td>
                     <td>@node.Name</td>
                     <td>@node.IPStr</td>
-                    <td>@string.Join(",", node.Group)</td>
+                    <td>@if (node.Group != null) string.Join(",", node.Group);</td>
                     <td>@node.Role</td>
                     <td>
                         <button class="btn btn-primary"

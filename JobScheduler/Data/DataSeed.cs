@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using JobScheduler.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace JobScheduler.Data
@@ -9,14 +13,16 @@ namespace JobScheduler.Data
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _dbContext;
 
         private IConfiguration Configuration { get; }
 
-        public DataSeed(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public DataSeed(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             Configuration = configuration;
             _roleManager = roleManager;
+            _dbContext = dbContext;
         }
 
         public async Task SeedAsync()
@@ -51,6 +57,26 @@ namespace JobScheduler.Data
                 if (!roleResult.Succeeded) 
                     throw new InvalidOperationException("Cannot add role Admin to default user");
             }
+
+            if (_dbContext.Nodes.FirstOrDefault(x => x.IPStr == GetIPAddress()) == null)
+            {
+                _dbContext.Nodes.Add(new Node() { IPStr = GetIPAddress(), Name = "Master", Role = NodeRole.Master });
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        private string GetIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+
+            return null;
         }
     }
 }
