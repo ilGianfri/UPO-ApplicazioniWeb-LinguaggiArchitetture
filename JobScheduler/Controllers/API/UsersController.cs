@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobScheduler.Controllers.API
@@ -13,11 +12,9 @@ namespace JobScheduler.Controllers.API
     [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly UserMethods _userMethods;
-        public UsersController(UserManager<IdentityUser> userManager, UserMethods userMethods)
+        public UsersController(UserMethods userMethods)
         {
-            _userManager = userManager;
             _userMethods = userMethods;
         }
 

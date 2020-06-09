@@ -1,5 +1,4 @@
-﻿using JobScheduler.Data;
-using JobScheduler.Shared.Models;
+﻿using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,9 @@ namespace JobScheduler.Controllers.API
     [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SchedulesController : ControllerBase
     {
-        private ApplicationDbContext _dbContext;
         private SchedulesMethods _schedulesMethods;
-        public SchedulesController(ApplicationDbContext dbContext, SchedulesMethods schedulesMethods)
+        public SchedulesController(SchedulesMethods schedulesMethods)
         {
-            _dbContext = dbContext;
             _schedulesMethods = schedulesMethods;
         }
 
