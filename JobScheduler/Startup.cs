@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
 using JobScheduler.Controllers;
+using Microsoft.OpenApi.Models;
 
 namespace JobScheduler
 {
@@ -30,14 +31,13 @@ namespace JobScheduler
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-#if Master
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<IdentityUser>(options => options.User.RequireUniqueEmail = true)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-#endif
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -52,10 +52,10 @@ namespace JobScheduler
 
             services.AddScoped<DataSeed>();
 
-            //services.addswaggergen(c =>
-            //{
-            //    c.swaggerdoc("v1", new openapiinfo { title = "jobscheduler Api", version = "v1" });
-            //});
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler API", Version = "v1" });
+            });
 
             services.AddAuthentication()
                 .AddCookie()
@@ -92,6 +92,13 @@ namespace JobScheduler
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Job Scheduler API V1");
+            });
 
             app.UseRouting();
 
