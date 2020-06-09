@@ -54,7 +54,7 @@ namespace JobScheduler
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler Master API", Version = "v1", Description = "This is the API exposed by the Master" });
             });
 
             services.AddAuthentication()
@@ -97,7 +97,7 @@ namespace JobScheduler
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Job Scheduler API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Job Scheduler Master API V1");
             });
             /**                  */
 

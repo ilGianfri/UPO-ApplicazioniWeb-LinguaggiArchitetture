@@ -19,17 +19,27 @@ namespace JobScheduler.Controllers
         /// <summary>
         /// Returns all the schedules
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a IEnumerable of Schedule objects</returns>
         public async Task<IEnumerable<Schedule>> GetSchedulesAsync()
         {
             return await _dbContext.Schedules.ToListAsync();
         }
 
+        /// <summary>
+        /// Gets a Schedule given its id
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
+        /// <returns>Returns a Schedule object</returns>
         public Schedule GetScheduleByIdAsync(int id)
         {
             return _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
         }
 
+        /// <summary>
+        /// Creates a new Schedule
+        /// </summary>
+        /// <param name="newSchedule">A Schedule object</param>
+        /// <returns>Returns the newly created Schedule object otherwise null</returns>
         public async Task<Schedule> CreateScheduleAsync(Schedule newSchedule)
         {
             _dbContext.Schedules.Add(newSchedule);
@@ -41,6 +51,13 @@ namespace JobScheduler.Controllers
             return null;
         }
 
+        /// <summary>
+        /// Edits a specific node
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
+        /// <param name="editedSchedule">The modified Schedule object</param>
+        /// <returns>Returns the modified Schedule object if successful</returns>
+        /// <returns></returns>
         public async Task<Schedule> EditScheduleAsync(int id, Schedule editedSchedule)
         {
             Schedule schedule = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
@@ -55,6 +72,11 @@ namespace JobScheduler.Controllers
             return null;
         }
 
+        /// <summary>
+        /// Deletes the Schedule identified by the gived id
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
+        /// <returns>Returns a boolean with the operation result</returns>
         public async Task<bool?> DeleteScheduleAsync(int id)
         {
             Schedule schedule = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);

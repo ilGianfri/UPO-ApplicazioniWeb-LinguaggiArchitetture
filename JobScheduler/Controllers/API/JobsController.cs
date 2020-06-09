@@ -25,6 +25,10 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET: api/<JobsController>
+        /// <summary>
+        /// Gets all the Jobs
+        /// </summary>
+        /// <returns>Returns a IEnumerable of Jobs.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Job>>> Get()
         {
@@ -32,8 +36,13 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET api/<JobsController>/5
+        /// <summary>
+        /// Gets a specific Job identified by its id
+        /// </summary>
+        /// <param name="id">The job id</param>
+        /// <returns>Returns a Job object</returns>
         [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        public ActionResult<Job> Get(int id)
         {
             Job job = _jobMethods.GetJobByIdAsync(id);
             if (job == null)
@@ -43,6 +52,11 @@ namespace JobScheduler.Controllers.API
         }
 
         // POST api/<JobsController>
+        /// <summary>
+        /// Creates a new job
+        /// </summary>
+        /// <param name="newJob">A Job object</param>
+        /// <returns>Returns 201 if succesful, otherwise 400.</returns>
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Job newJob)
         {
@@ -58,10 +72,16 @@ namespace JobScheduler.Controllers.API
                 return BadRequest(ex.Message);
             }
 
-            return Ok();
+            return StatusCode(201);
         }
 
         // PUT api/<JobsController>/5
+        /// <summary>
+        /// Edits an existing Job identified by its id
+        /// </summary>
+        /// <param name="id">The id of the Job to edit</param>
+        /// <param name="modifiedJob">The modified Job object</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, [FromBody] Job modifiedJob)
         {
@@ -76,6 +96,11 @@ namespace JobScheduler.Controllers.API
         }
 
         // DELETE api/<JobsController>/5
+        /// <summary>
+        /// Deletes a specific job identified by its id
+        /// </summary>
+        /// <param name="id">The job id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

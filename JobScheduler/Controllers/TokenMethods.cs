@@ -24,6 +24,11 @@ namespace JobScheduler.Controllers
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Creates a token for the specified user
+        /// </summary>
+        /// <param name="model">The user details</param>
+        /// <returns>A JwtToken object containing the user token</returns>
         public async Task<JwtToken?> CreateToken(InputModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);

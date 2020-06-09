@@ -22,6 +22,10 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET: api/<UsersController>
+        /// <summary>
+        /// Returns all the users with their assigned role.
+        /// </summary>
+        /// <returns>Returns a IEnumerable of UserWithRole objects. Each object contains the User object and its Role</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithRole>>> Get()
         {
@@ -33,6 +37,11 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET api/<UsersController>/5
+        /// <summary>
+        /// Returns a user given its id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithRole>> Get(string id)
         {
@@ -47,8 +56,12 @@ namespace JobScheduler.Controllers.API
         }
 
         // POST api/<UsersController>
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <param name="newUser">A UserWithRole object containing the new user details (and the Role to assign him)</param>
         [HttpPost]
-        public async Task<IActionResult> PostCreate([FromBody] UserWithRole newUser)
+        public async Task<ActionResult> PostCreate([FromBody] UserWithRole newUser)
         {
             if (newUser == null)
                 return BadRequest();
@@ -61,8 +74,14 @@ namespace JobScheduler.Controllers.API
         }
 
         // PUT api/<UsersController>/5
+        /// <summary>
+        /// Edits an existing user
+        /// </summary>
+        /// <param name="id">The id of the user to modify</param>
+        /// <param name="modifiedUser">A UserWithRole object containing the modified user details</param>
+        /// <returns>Returns the modified user object if successfull</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] UserWithRole modifiedUser)
+        public async Task<ActionResult<UserWithRole>> Put(string id, [FromBody] UserWithRole modifiedUser)
         {
             if (modifiedUser == null)
                 return BadRequest();
@@ -70,15 +89,19 @@ namespace JobScheduler.Controllers.API
             var edited = await _userMethods.EditUserAsync(id, modifiedUser);
             if (edited != null)
             {
-                return Ok();
+                return Ok(edited);
             }
 
             return NotFound();
         }
 
         // DELETE api/<UsersController>/5
+        /// <summary>
+        /// Deletes the specified user
+        /// </summary>
+        /// <param name="id">The id of the user to delete</param>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest();

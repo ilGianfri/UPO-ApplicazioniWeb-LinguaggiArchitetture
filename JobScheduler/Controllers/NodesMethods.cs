@@ -1,7 +1,6 @@
 ﻿using JobScheduler.Data;
 using JobScheduler.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,16 +17,30 @@ namespace JobScheduler.Controllers
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Returns all the nodes
+        /// </summary>
+        /// <returns>Returns a IEnumerable of Node objects</returns>
         public async Task<IEnumerable<Node>> GetNodesAsync()
         {
             return await _dbContext.Nodes.ToListAsync();
         }
 
+        /// <summary>
+        /// Returns a specific Node given its id
+        /// </summary>
+        /// <param name="id">The id of the Node to return</param>
+        /// <returns>Returns a Node object</returns>
         public Node GetNodeByIdAsync(int id)
         {
             return _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
         }
 
+        /// <summary>
+        /// Creates a new Node
+        /// </summary>
+        /// <param name="newNode">The Node object to create</param>
+        /// <returns>Returns true if created successfully</returns>
         public async Task<bool> CreateNodeAsync(Node newNode)
         {
             _dbContext.Nodes.Add(newNode);
@@ -36,6 +49,12 @@ namespace JobScheduler.Controllers
             return changes > 0;
         }
 
+        /// <summary>
+        /// Edits an existing node
+        /// </summary>
+        /// <param name="id">The id of the Node to edit</param>
+        /// <param name="editedNode">The modified Node object</param>
+        /// <returns>The modified Node object if successful otherwise null</returns>
         public async Task<Node?> EditNodeAsync(int id, Node editedNode)
         {
             Node node = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
@@ -52,6 +71,10 @@ namespace JobScheduler.Controllers
             return node;
         }
 
+        /// <summary>
+        /// Deletes the Node with the specific id
+        /// </summary>
+        /// <param name="id">The Node id</param>
         public async Task DeleteNodeAsync(int id)
         {
             _dbContext.Nodes.Remove(_dbContext.Nodes.FirstOrDefault(x => x.Id == id));

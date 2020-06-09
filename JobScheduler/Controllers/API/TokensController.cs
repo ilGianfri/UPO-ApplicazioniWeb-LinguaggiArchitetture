@@ -17,8 +17,10 @@ namespace JobScheduler.Controllers.API
         }
 
         /// <summary>
-        /// Creates a token for the users
+        /// Creates a token for the specified user
         /// </summary>
+        /// <param name="model">The user details</param>
+        /// <returns>A JwtToken object containing the user token</returns>
         [HttpPost]
         public async Task<ActionResult<JwtToken>> CreateToken([FromBody] InputModel model)
         {

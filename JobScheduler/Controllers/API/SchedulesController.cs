@@ -23,6 +23,10 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET: api/<SchedulesController>
+        /// <summary>
+        /// Returns all the schedules
+        /// </summary>
+        /// <returns>Returns a IEnumerable of Schedule objects</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Schedule>>> Get()
         {
@@ -32,6 +36,11 @@ namespace JobScheduler.Controllers.API
         }
 
         // GET api/<SchedulesController>/5
+        /// <summary>
+        /// Gets a Schedule given its id
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
+        /// <returns>Returns a Schedule object</returns>
         [HttpGet("{id}")]
         public ActionResult<Schedule> Get(int id)
         {
@@ -43,6 +52,11 @@ namespace JobScheduler.Controllers.API
         }
 
         // POST api/<SchedulesController>
+        /// <summary>
+        /// Creates a new Schedule
+        /// </summary>
+        /// <param name="schedule">A Schedule object</param>
+        /// <returns>Returns the newly created Schedule object</returns>
         [HttpPost]
         public async Task<ActionResult<Schedule>> Post([FromBody] Schedule schedule)
         {
@@ -55,6 +69,12 @@ namespace JobScheduler.Controllers.API
         }
 
         // PUT api/<SchedulesController>/5
+        /// <summary>
+        /// Edits a specific node
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
+        /// <param name="modifiedSchedule">The modified Schedule object</param>
+        /// <returns>Returns the modified Schedule object if successful</returns>
         [HttpPut("{id}")]
         public async Task<ActionResult<Schedule>> Put(int id, [FromBody] Schedule modifiedSchedule)
         {
@@ -69,6 +89,10 @@ namespace JobScheduler.Controllers.API
         }
 
         // DELETE api/<SchedulesController>/5
+        /// <summary>
+        /// Deletes the Schedule identified by the gived id
+        /// </summary>
+        /// <param name="id">The Schedule id</param>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

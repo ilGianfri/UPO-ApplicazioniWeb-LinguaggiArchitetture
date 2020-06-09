@@ -19,6 +19,7 @@ namespace JobScheduler.Controllers
         /// <summary>
         /// Returns all the users with their assigned role.
         /// </summary>
+        /// <returns>Returns a IEnumerable of UserWithRole objects. Each object contains the User object and its Role</returns>
         public async Task<IEnumerable<UserWithRole>> GetUsersAsync()
         {
             List<UserWithRole> result = new List<UserWithRole>();
@@ -38,7 +39,7 @@ namespace JobScheduler.Controllers
         }
 
         /// <summary>
-        /// Finds and returns a user by its id. Returns null if not found.
+        /// Returns a user given its id. Returns null if not found.
         /// </summary>
         /// <param name="id">The id of the user</param>
         public async Task<UserWithRole> GetUserByIdAsync(string id)
