@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using JobScheduler.Models;
+using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using static JobScheduler.Areas.Identity.Pages.Account.LoginModel;
 

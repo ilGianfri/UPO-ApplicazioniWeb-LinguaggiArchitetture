@@ -5,9 +5,16 @@ VisualStudioVersion = 16.0.30114.128
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler", "JobScheduler\JobScheduler.csproj", "{30482739-80E6-48C2-B30C-595D511A1A6A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler-Slave", "JobScheduler-Slave\JobScheduler-Slave.csproj", "{238427B1-D4D9-401F-9E35-E479A222B4D1}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JobScheduler.Shared", "JobScheduler.Shared\JobScheduler.Shared.shproj", "{5583F05B-059A-4513-A099-9444BE5BC28D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler.Slave", "JobScheduler.Slave\JobScheduler.Slave.csproj", "{5771D1A7-ED65-456D-A42E-50AF698A0EBA}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		JobScheduler.Shared\JobScheduler.Shared.projitems*{30482739-80e6-48c2-b30c-595d511a1a6a}*SharedItemsImports = 5
+		JobScheduler.Shared\JobScheduler.Shared.projitems*{5583f05b-059a-4513-a099-9444be5bc28d}*SharedItemsImports = 13
+		JobScheduler.Shared\JobScheduler.Shared.projitems*{5771d1a7-ed65-456d-a42e-50af698a0eba}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -17,10 +24,10 @@ Global
 		{30482739-80E6-48C2-B30C-595D511A1A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30482739-80E6-48C2-B30C-595D511A1A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30482739-80E6-48C2-B30C-595D511A1A6A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{238427B1-D4D9-401F-9E35-E479A222B4D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{238427B1-D4D9-401F-9E35-E479A222B4D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{238427B1-D4D9-401F-9E35-E479A222B4D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{238427B1-D4D9-401F-9E35-E479A222B4D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5771D1A7-ED65-456D-A42E-50AF698A0EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5771D1A7-ED65-456D-A42E-50AF698A0EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5771D1A7-ED65-456D-A42E-50AF698A0EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5771D1A7-ED65-456D-A42E-50AF698A0EBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
-namespace JobScheduler.Models
+namespace JobScheduler.Shared.Models
 {
     public class Node
     {

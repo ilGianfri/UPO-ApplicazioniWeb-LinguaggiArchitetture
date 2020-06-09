@@ -1,5 +1,5 @@
 ﻿using JobScheduler.Data;
-using JobScheduler.Models;
+using JobScheduler.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

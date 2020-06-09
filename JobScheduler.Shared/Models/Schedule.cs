@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace JobScheduler.Models
+namespace JobScheduler.Shared.Models
 {
     public class Schedule
     {

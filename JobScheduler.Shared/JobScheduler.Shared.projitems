@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5583f05b-059a-4513-a099-9444be5bc28d</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>JobScheduler.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Job.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\JobReports.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\JwtToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Node.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Schedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserWithRole.cs" />
+  </ItemGroup>
+</Project>

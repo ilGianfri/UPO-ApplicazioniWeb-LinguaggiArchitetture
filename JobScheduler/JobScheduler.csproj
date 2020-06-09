@@ -35,4 +35,6 @@
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0-preview.4.20251.6" />
   </ItemGroup>
 
+  <Import Project="..\JobScheduler.Shared\JobScheduler.Shared.projitems" Label="Shared" />
+
 </Project>

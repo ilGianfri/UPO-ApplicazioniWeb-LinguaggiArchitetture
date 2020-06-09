@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace JobScheduler.Models
+namespace JobScheduler.Shared.Models
 {
     public class JwtToken
     {

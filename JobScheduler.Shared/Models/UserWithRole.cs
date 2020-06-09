@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace JobScheduler.Models
+namespace JobScheduler.Shared.Models
 {
     public class UserWithRole
     {

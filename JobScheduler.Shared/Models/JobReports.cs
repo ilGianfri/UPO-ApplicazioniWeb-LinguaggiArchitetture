@@ -1,4 +1,4 @@
-﻿namespace JobScheduler.Models
+﻿namespace JobScheduler.Shared.Models
 {
     /// <summary>
     /// This model is used to save the result of a Job

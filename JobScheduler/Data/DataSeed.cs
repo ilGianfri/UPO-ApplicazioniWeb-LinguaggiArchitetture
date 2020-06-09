@@ -1,4 +1,4 @@
-﻿using JobScheduler.Models;
+﻿using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
