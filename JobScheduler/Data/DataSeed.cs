@@ -41,11 +41,11 @@ namespace JobScheduler.Data
                 };
 
                 IdentityResult result = await _userManager.CreateAsync(user, password);
-                if (!result.Succeeded) 
+                if (!result.Succeeded)
                     throw new InvalidOperationException("Cannot create default user");
             }
 
-            if (! await _roleManager.RoleExistsAsync("Admin"))
+            if (!await _roleManager.RoleExistsAsync("Admin"))
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
 
             if (!await _roleManager.RoleExistsAsync("Editor"))
@@ -54,7 +54,7 @@ namespace JobScheduler.Data
             if (!await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 IdentityResult roleResult = await _userManager.AddToRoleAsync(user, "Admin");
-                if (!roleResult.Succeeded) 
+                if (!roleResult.Succeeded)
                     throw new InvalidOperationException("Cannot add role Admin to default user");
             }
 

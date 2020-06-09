@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using JobScheduler.Shared.Models;
+﻿using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
@@ -13,7 +13,7 @@ namespace JobScheduler.Controllers.API
     [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NodesController : ControllerBase
     {
-        private NodesMethods _nodesMethods;
+        private readonly NodesMethods _nodesMethods;
         public NodesController(NodesMethods nodesMethods)
         {
             _nodesMethods = nodesMethods;

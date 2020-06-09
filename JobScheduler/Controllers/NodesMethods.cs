@@ -11,7 +11,7 @@ namespace JobScheduler.Controllers
 {
     public class NodesMethods
     {
-        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         public NodesMethods(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;

@@ -9,7 +9,7 @@ namespace JobScheduler.Controllers
 {
     public class SchedulesMethods
     {
-        private ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         public SchedulesMethods(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;

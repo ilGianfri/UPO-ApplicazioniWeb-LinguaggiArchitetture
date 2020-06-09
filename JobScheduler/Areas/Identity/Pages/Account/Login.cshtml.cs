@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using JobScheduler.Controllers;
+using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using JobScheduler.Shared.Models;
-using Microsoft.AspNetCore.Http;
-using JobScheduler.Controllers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace JobScheduler.Areas.Identity.Pages.Account
 {
@@ -87,7 +87,7 @@ namespace JobScheduler.Areas.Identity.Pages.Account
                             ModelState.AddModelError(string.Empty, "Cannot get a valid token. Try again.");
                             return Page();
                         }
-                        
+
                         Response.Cookies.Append("JWToken", response.Token);
                         //HttpContext.Session.SetString("JWToken", jwtToken);
                     }

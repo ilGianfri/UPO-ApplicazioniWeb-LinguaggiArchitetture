@@ -13,7 +13,7 @@ namespace JobScheduler.Shared.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public DateTime When { get; set; }
-        public Job Job { get; set;  }
+        public Job Job { get; set; }
         public string Cron { get; set; }
     }
 }

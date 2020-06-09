@@ -13,7 +13,7 @@ namespace JobScheduler.Controllers.API
     [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SchedulesController : ControllerBase
     {
-        private SchedulesMethods _schedulesMethods;
+        private readonly SchedulesMethods _schedulesMethods;
         public SchedulesController(SchedulesMethods schedulesMethods)
         {
             _schedulesMethods = schedulesMethods;

@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using JobScheduler.Shared.Models;
+﻿using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using static JobScheduler.Areas.Identity.Pages.Account.LoginModel;
 
 namespace JobScheduler.Controllers.API
@@ -9,7 +9,7 @@ namespace JobScheduler.Controllers.API
     [ApiController]
     public class TokensController : ControllerBase
     {
-        private TokenMethods _tokenMethods;
+        private readonly TokenMethods _tokenMethods;
 
         public TokensController(TokenMethods tokenMethods)
         {
