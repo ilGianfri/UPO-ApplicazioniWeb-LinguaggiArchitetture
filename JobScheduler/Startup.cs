@@ -9,7 +9,6 @@ using JobScheduler.Areas.Identity;
 using JobScheduler.Data;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.EntityFrameworkCore;
