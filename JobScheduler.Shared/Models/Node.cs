@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
 {
@@ -15,13 +16,21 @@ namespace JobScheduler.Shared.Models
             Role = role;
         }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonPropertyName("Id")]
         public int Id { get; set; }
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
-        public string IPStr { get; set; } = string.Empty;
+        [JsonPropertyName("IPStr")]
+        public string IPStr { get; set; }
+        [JsonPropertyName("Port")]
+        public int Port { get; set; }
 
         [NotMapped]
+        [JsonPropertyName("IP")]
         public IPAddress IP { get; set; }
+        [JsonPropertyName("Group")]
         public int[] Group { get; set; }
+        [JsonPropertyName("Role")]
         public NodeRole Role { get; set; }
     }
 

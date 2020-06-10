@@ -92,7 +92,7 @@ namespace JobScheduler
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            /** Documentazione API */
+            /** API Docs */
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

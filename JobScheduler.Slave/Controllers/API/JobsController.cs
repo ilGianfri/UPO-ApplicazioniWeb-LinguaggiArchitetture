@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using JobScheduler.Shared.Models;
+using JobScheduler.Slave.BackgroundWorker;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace JobScheduler.Slave.Controllers.API
 {
@@ -7,37 +9,47 @@ namespace JobScheduler.Slave.Controllers.API
     [ApiController]
     public class JobsController : ControllerBase
     {
-        // GET: api/<JobsController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly JobsScheduler _jobsScheduler;
+        public JobsController(JobsScheduler jobsScheduler)
         {
-            return new string[] { "value1", "value2" };
+            _jobsScheduler = jobsScheduler;
+        }
+        // GET: api/<JobsController>/running
+        /// <summary>
+        /// Returns the current running Job
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("running")]
+        public async Task<ActionResult<Job>> GetRunningJob()
+        {
+            //TODO
+            return null;
         }
 
-        // GET api/<JobsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET api/<JobsController>/status/5
+        /// <summary>
+        /// Returns the status of a Job given its id
+        /// </summary>
+        /// <param name="id">The Job id</param>
+        /// <returns></returns>
+        [HttpGet("status/{id}")]
+        public async Task<ActionResult<JobStatus>> GetJobStatus(int id)
         {
-            return "value";
+            //TODO
+            return null;
         }
 
-        // POST api/<JobsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // POST api/<JobsController>/start
+        /// <summary>
+        /// Starts a new Job
+        /// </summary>
+        /// <param name="schedule">A Schedule object containing the Job to run</param>
+        [HttpPost("start")]
+        public async Task<ActionResult> ScheduleJob([FromBody] Schedule schedule)
         {
+            _jobsScheduler.AddJob(schedule);
 
-        }
-
-        // PUT api/<JobsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<JobsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return Ok();
         }
     }
 }

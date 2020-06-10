@@ -1,3 +1,4 @@
+using JobScheduler.Slave.BackgroundWorker;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,11 +21,12 @@ namespace JobScheduler.Slave
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler Slave API", Version = "v1", Description = "This is the API exposed by slave nodes" });
             });
+
+            services.AddSingleton<JobsScheduler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,7 +41,7 @@ namespace JobScheduler.Slave
 
             app.UseRouting();
 
-            /** Documentazione API */
+            /** API Docs */
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

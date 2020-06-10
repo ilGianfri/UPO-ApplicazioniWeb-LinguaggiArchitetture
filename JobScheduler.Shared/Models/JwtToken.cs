@@ -5,9 +5,9 @@ namespace JobScheduler.Shared.Models
 {
     public class JwtToken
     {
-        [JsonPropertyName("token")]
+        [JsonPropertyName("Token")]
         public string Token { get; set; }
-        [JsonPropertyName("expiration")]
+        [JsonPropertyName("Expiration")]
         public DateTime Expiration { get; set; }
     }
 }

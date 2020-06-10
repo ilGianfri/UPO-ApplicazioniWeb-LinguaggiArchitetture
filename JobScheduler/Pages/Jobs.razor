@@ -1,5 +1,4 @@
 ﻿@page "/jobs"
-@inject HttpClient httpClient
 @inject IHttpContextAccessor httpContextAccessor
 @inject JobsMethods jobsMethods
 
@@ -18,21 +17,21 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (Job node in ExistingJobs)
+            @foreach (Job job in ExistingJobs)
             {
-                <tr>
-                    <td>@node.Id</td>
-                    <td>@node.Path</td>
-                    <td>@node.Parameters</td>
-                    <td>@string.Join(",",node.Nodes)</td>
-                    <td>@node.Status</td>
-                    <td>
-                        <button class="btn btn-primary"
-                                @onclick="(() => { IsEditJob = true; EditJob(node); })">
-                            Edit
-                        </button>
-                    </td>
-                </tr>
+            <tr>
+                <td>@job.Id</td>
+                <td>@job.Path</td>
+                <td>@job.Parameters</td>
+                <td>@if (job.Nodes != null) string.Join(",", job.Nodes);</td>
+                <td>@job.Status</td>
+                <td>
+                    <button class="btn btn-primary"
+                            @onclick="(() => { IsEditJob = true; EditJob(job); })">
+                        Edit
+                    </button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -164,7 +163,8 @@
     {
         DialogTitle = "Edit Job";
         CurrentJob = job;
-        CurrentJobNodesNames = string.Join(",", job.Nodes);
+        if (job.Nodes != null)
+            CurrentJobNodesNames = string.Join(",", job.Nodes);
         ShowPopup = true;
     }
 }

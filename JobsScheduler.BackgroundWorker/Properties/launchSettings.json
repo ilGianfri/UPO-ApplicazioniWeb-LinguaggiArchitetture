@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "JobsScheduler.BackgroundWorker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

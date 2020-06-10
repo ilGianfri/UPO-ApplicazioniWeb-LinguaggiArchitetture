@@ -10,6 +10,7 @@
                 <th>Id</th>
                 <th>Friendly Name</th>
                 <th>IP</th>
+                <th>IP</th>
                 <th>Groups</th>
                 <th>Role</th>
                 <th></th>
@@ -22,16 +23,20 @@
                     <td>@node.Id</td>
                     <td>@node.Name</td>
                     <td>@node.IPStr</td>
-                    <td>@if (node.Group != null) string.Join(",", node.Group);</td>
-                    <td>@node.Role</td>
+                    <td>@node.Port</td>
                     <td>
-                        <button class="btn btn-primary"
-                                @onclick="(() => { IsEditNode = true; EditNode(node); })">
-                            Edit
-                        </button>
-                    </td>
-                </tr>
-            }
+                        @if (node.Group != null)
+                        {<span>@string.Join(",", node.Group)</span>}
+                </td>
+                <td>@node.Role</td>
+                <td>
+                    <button class="btn btn-primary"
+                            @onclick="(() => { IsEditNode = true; EditNode(node); })">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 
@@ -44,8 +49,7 @@
                     <div class="modal-header">
                         <h3 class="modal-title">@DialogTitle</h3>
                         <!-- Button to close the popup -->
-                        <button type="button" class="close"
-                                @onclick="ClosePopup">
+                        <button type="button" class="close" @onclick="ClosePopup">
                             <span aria-hidden="true">X</span>
                         </button>
                     </div>
@@ -57,16 +61,19 @@
                             <p>Id: @CurrentNode.Id</p>
                         }
                         Name: <input class="form-control" type="text"
-                               placeholder="Name"
-                               @bind="CurrentNode.Name" />
+                                     placeholder="Name"
+                                     @bind="CurrentNode.Name" />
                         IP: <input class="form-control" type="text"
-                               placeholder="IP"
-                               @bind="CurrentNode.IPStr" />
+                                   placeholder="IP"
+                                   @bind="CurrentNode.IPStr" />
+                        Port: <input class="form-control" type="text"
+                                     placeholder="eg. 8080"
+                                     @bind="CurrentNode.Port" />
                         Group: <input class="form-control" type="text"
-                               placeholder="Group (numbers separated by , - e.g 1,2,3)"
-                               @bind="CurrentNodeGroup" />
+                                      placeholder="Group (numbers separated by , - e.g 1,2,3)"
+                                      @bind="CurrentNodeGroup" />
                         Role: <select class="form-control"
-                                @bind="@CurrentNodeRole">
+                                      @bind="@CurrentNodeRole">
                             @foreach (string option in AvailableRoles)
                             {
                                 <option value="@option">
@@ -128,7 +135,8 @@
         if (IsEditNode)
         {
             CurrentNode.IP = null;
-            CurrentNode.Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
+            if (!string.IsNullOrEmpty(CurrentNodeGroup))
+                CurrentNode.Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
             {
@@ -139,14 +147,16 @@
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
-            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray(), Role = CurrentNode.Role };
+            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role };
+
+            if (!string.IsNullOrEmpty(CurrentNodeGroup))
+                node.Group = CurrentNodeGroup.Split(",").Select(x => Convert.ToInt32(x)).ToArray();
 
             var response = await nodesMethods.CreateNodeAsync(node);
             if (response)
                 ClosePopup();
             else ErrorMessage = "Error: Could not create this node.";
         }
-
     }
 
     private async void DeleteNode()
@@ -179,6 +189,7 @@
         DialogTitle = "Edit Node";
         CurrentNodeRole = node.Role == 0 ? "Master" : "Slave";
         ShowPopup = true;
-        CurrentNodeGroup = string.Join(",", node.Group);
+        if (node.Group != null)
+            CurrentNodeGroup = string.Join(",", node.Group);
     }
 }
