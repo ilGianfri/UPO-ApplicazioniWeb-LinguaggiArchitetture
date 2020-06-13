@@ -41,6 +41,7 @@ namespace JobScheduler
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            
             //services.AddHttpContextAccessor();
             //services.AddSingleton<HttpClient>();
 

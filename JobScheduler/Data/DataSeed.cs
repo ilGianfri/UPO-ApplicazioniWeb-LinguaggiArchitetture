@@ -20,8 +20,8 @@ namespace JobScheduler.Data
 
         public DataSeed(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ApplicationDbContext dbContext)
         {
-            _userManager = userManager;
             Configuration = configuration;
+            _userManager = userManager;
             _roleManager = roleManager;
             _dbContext = dbContext;
         }

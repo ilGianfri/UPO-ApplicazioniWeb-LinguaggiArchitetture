@@ -164,8 +164,13 @@
         }
         else //New
         {
-            var schedule = new Schedule { Job = ScheduleJob, Cron = CurrentSchedule.Cron };
+            if (ScheduleJob == null)
+            {
+                ErrorMessage = $"Error: You must select a job";
+                return;
+            }
 
+            var schedule = new Schedule { Job = ScheduleJob, Cron = CurrentSchedule.Cron };
             var response = await schedulesMethods.CreateScheduleAsync(schedule);
             if (response != null)
                 ClosePopup();
@@ -184,5 +189,7 @@
         DialogTitle = "Edit Schedule";
         CurrentSchedule = schedule;
         ShowPopup = true;
+
+        ScheduleJob = AvailableJobs.FirstOrDefault(x => x.Id == schedule.Id);
     }
 }

@@ -176,9 +176,7 @@
         CurrentJob = job;
         if (job.Nodes != null)
         {
-            //TODO
-
-            //ExistingNodes = string.Join(",", job.Nodes);
+            ExistingNodes.Where(n => job.Nodes.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
             ShowPopup = true;
         }
     }

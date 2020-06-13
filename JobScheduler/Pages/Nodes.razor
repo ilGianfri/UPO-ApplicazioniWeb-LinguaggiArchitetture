@@ -37,7 +37,7 @@
                     </button>
                 </td>
             </tr>
-        }
+            }
         </tbody>
     </table>
 
@@ -194,8 +194,7 @@
         CurrentNodeRole = node.Role == 0 ? "Master" : "Slave";
         ShowPopup = true;
 
-        //TODO
-        //if (node.Group != null)
-        //    CurrentNodeGroup = string.Join(",", node.Group);
+        if (node.Group != null)
+            ExistingGroups.Where(n => node.Group.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
     }
 }
