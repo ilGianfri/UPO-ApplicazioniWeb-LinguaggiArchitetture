@@ -64,13 +64,13 @@
                         Parameters: <input class="form-control" type="text"
                                            placeholder="Parameters"
                                            @bind="CurrentJob.Parameters" />
-                        Nodes: @foreach (Node node in ExistingNodes)
+                        Nodes: <br/>@foreach (Node node in ExistingNodes)
                         {
-                            <input type="checkbox" id="@node.Id" value="@node.Name" bind-value="@node.IsChecked" />
+                            <input type="checkbox" id="@node.Id" name="@node.Name" value="@node.Name" @bind="@node.IsChecked"/> @node.Name
+                    <br />
                         }
                         <!-- Button to save the node -->
-                        <button class="btn btn-primary"
-                                @onclick="SaveJob">
+                        <button class="btn btn-primary" @onclick="SaveJob">
                             Save
                         </button>
                         <!-- Only show delete button if not a new record -->
@@ -149,7 +149,7 @@
         }
         else //New
         {
-            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = ExistingNodes.Where(x => x.IsChecked = true).ToArray() };
+            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = ExistingNodes.Where(x => x.IsChecked = true).ToList() };
 
             var response = await jobsMethods.CreateJobAsync(job);
             if (response)

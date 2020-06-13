@@ -1,4 +1,5 @@
 ﻿using JobScheduler.Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -74,7 +75,6 @@ namespace JobScheduler.Data
                     return ip.ToString();
                 }
             }
-
             return null;
         }
     }

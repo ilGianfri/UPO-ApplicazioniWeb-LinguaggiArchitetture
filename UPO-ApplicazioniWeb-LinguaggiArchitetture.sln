@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler", "JobSchedule
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "JobScheduler.Shared", "JobScheduler.Shared\JobScheduler.Shared.shproj", "{5583F05B-059A-4513-A099-9444BE5BC28D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobScheduler.Slave", "JobScheduler.Slave\JobScheduler.Slave.csproj", "{5771D1A7-ED65-456D-A42E-50AF698A0EBA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobScheduler.Slave", "JobScheduler.Slave\JobScheduler.Slave.csproj", "{5771D1A7-ED65-456D-A42E-50AF698A0EBA}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

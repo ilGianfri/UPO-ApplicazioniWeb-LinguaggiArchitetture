@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
@@ -13,7 +14,7 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("Parameters")]
         public string Parameters { get; set; }
         [JsonPropertyName("Nodes")]
-        public Node[] Nodes { get; set; }
+        public List<Node> Nodes { get; set; }
         [JsonPropertyName("Status")]
         public JobStatus Status { get; set; }
     }

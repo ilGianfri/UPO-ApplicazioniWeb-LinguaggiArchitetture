@@ -1,0 +1,151 @@
+﻿@page "/groups"
+@inject GroupsMethods groupsMethods
+
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Groups</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Group group in ExistingGroups)
+            {
+                <tr>
+                    <td>@group.Id</td>
+                    <td>@group.Name</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => { IsEditGroup = true; EditGroup(group); })">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (ShowPopup)
+    {
+        <!-- This is the popup to create or edit a group -->
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">@DialogTitle</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current group -->
+                    <div class="modal-body">
+                        <!-- Only show Id if not a new group -->
+                        @if (CurrentGroup.Id != 0)
+                        {
+                            <p>Id: @CurrentGroup.Id</p>
+                        }
+                        Name: <input class="form-control" type="text"
+                                           placeholder="Group name"
+                                           @bind="CurrentGroup.Name" />
+                        <!-- Button to save the group -->
+                        <button class="btn btn-primary"
+                                @onclick="SaveGroup">
+                            Save
+                        </button>
+                        <!-- Only show delete button if not a new record -->
+                        @if (IsEditGroup)
+                        {
+                            <!-- Button to delete the group -->
+                            <button class="btn btn-danger" @onclick="DeleteGroup">
+                                Delete
+                            </button>
+                        }
+                        <br />
+                        <span style="color:red">@ErrorMessage</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <button class="btn btn-success" @onclick="CreateGroup">Create group</button>
+</AuthorizeView>
+
+@code {
+    private List<Group> ExistingGroups = new List<Group>();
+    private Group CurrentGroup = new Group();
+    private bool IsEditGroup { get; set; } = false;
+    private bool ShowPopup { get; set; } = false;
+    private string DialogTitle { get; set; } = string.Empty;
+    private string ErrorMessage { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GetGroups();
+    }
+
+    private async void GetGroups()
+    {
+        ExistingGroups = (await groupsMethods.GetGroupsAsync()).ToList();
+
+        StateHasChanged();
+    }
+
+    private async void SaveGroup()
+    {
+        //Edit
+        if (IsEditGroup)
+        {
+            var response = await groupsMethods.EditGroupAsync(CurrentGroup.Id, CurrentGroup);
+            if (response != null)
+            {
+                ClosePopup();
+            }
+            else ErrorMessage = $"Error: Could not edit this group";
+        }
+        else //New
+        {
+            var group = new Group { Name = CurrentGroup.Name };
+
+            var response = await groupsMethods.CreateGroupAsync(group);
+            if (response)
+                ClosePopup();
+            else ErrorMessage = $"Error: Could not create this group";
+        }
+    }
+
+    private async void DeleteGroup()
+    {
+        await groupsMethods.DeleteGroupAsync(CurrentGroup.Id);
+        ClosePopup();
+    }
+
+    private void EditGroup(Group group)
+    {
+        DialogTitle = "Edit Group";
+        CurrentGroup = group;
+        ShowPopup = true;
+    }
+
+    private void CreateGroup()
+    {
+        DialogTitle = "New Group";
+        ShowPopup = true;
+    }
+
+    private void ClosePopup()
+    {
+        ShowPopup = false;
+        IsEditGroup = false;
+        ErrorMessage = string.Empty;
+        CurrentGroup = new Group();
+
+        StateHasChanged();
+
+        GetGroups();
+    }
+}

@@ -70,10 +70,10 @@
                         Port: <input class="form-control" type="text"
                                      placeholder="eg. 8080"
                                      @bind="CurrentNode.Port" />
-                        Group: @foreach (Group group in ExistingGroups)
+                        Group: <br/>@foreach (Group group in ExistingGroups)
                         {
-                            <input type="checkbox" id="@group.Id" value="@group.Name" bind-value="@group.IsChecked" />
-                        }
+                            <input type="checkbox" id="@group.Id" name="@group.Name" value="@group.Name" @bind="@group.IsChecked" /> @group.Name
+                            <br>}
                         Role: <select class="form-control"
                                       @bind="@CurrentNodeRole">
                             @foreach (string option in AvailableRoles)
@@ -98,7 +98,7 @@
                                 Delete
                             </button>
                         }
-                        <br />
+                        <br/>
                         <span style="color:red">@ErrorMessage</span>
                     </div>
                 </div>
@@ -116,13 +116,13 @@
     private Node CurrentNode = new Node();
     private bool ShowPopup = false;
     private string ErrorMessage = string.Empty;
-    private string CurrentNodeGroup = string.Empty;
     private string CurrentNodeRole = string.Empty;
     private List<string> AvailableRoles = new List<string>() { "Master", "Slave" };
 
     protected override async Task OnInitializedAsync()
     {
         await GetNodes();
+        await GetGroups();
     }
 
     private void AddNewNode()
@@ -138,8 +138,7 @@
         if (IsEditNode)
         {
             CurrentNode.IP = null;
-            if (!string.IsNullOrEmpty(CurrentNodeGroup))
-                CurrentNode.Group = ExistingGroups.Where(x => x.IsChecked).ToArray();
+            CurrentNode.Group = ExistingGroups.Where(x => x.IsChecked).ToList();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
             {
@@ -150,7 +149,7 @@
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
-            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, Group = ExistingGroups.Where(x => x.IsChecked).ToArray() };
+            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, Group = ExistingGroups.Where(x => x.IsChecked).ToList() };
 
             var response = await nodesMethods.CreateNodeAsync(node);
             if (response)

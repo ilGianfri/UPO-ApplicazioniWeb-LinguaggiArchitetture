@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 using System.Text.Json.Serialization;
 
@@ -8,7 +9,7 @@ namespace JobScheduler.Shared.Models
     {
         public Node() { }
 
-        public Node(int id, string name, Group[] group, NodeRole role)
+        public Node(int id, string name, List<Group> group, NodeRole role)
         {
             Id = id;
             Name = name;
@@ -29,7 +30,7 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("IP")]
         public IPAddress IP { get; set; }
         [JsonPropertyName("Group")]
-        public Group[] Group { get; set; }
+        public List<Group> Group { get; set; }
         [JsonPropertyName("Role")]
         public NodeRole Role { get; set; }
         [JsonIgnore]
