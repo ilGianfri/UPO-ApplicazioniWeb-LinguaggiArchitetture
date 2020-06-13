@@ -188,8 +188,9 @@
     {
         DialogTitle = "Edit Schedule";
         CurrentSchedule = schedule;
-        ShowPopup = true;
 
         ScheduleJob = AvailableJobs.FirstOrDefault(x => x.Id == schedule.Id);
+
+        ShowPopup = true;
     }
 }
