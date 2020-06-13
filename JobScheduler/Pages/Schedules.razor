@@ -146,6 +146,12 @@
             return;
         }
 
+        if (CurrentSchedule.Job == null)
+        {
+            ErrorMessage = $"Error: No job has been specified";
+            return;
+        }
+
         //Edit
         if (IsEditSchedule)
         {
