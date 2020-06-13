@@ -5,6 +5,9 @@ using static JobScheduler.Areas.Identity.Pages.Account.LoginModel;
 
 namespace JobScheduler.Controllers.API
 {
+    /// <summary>
+    /// API to get a JWT Token
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class TokensController : ControllerBase

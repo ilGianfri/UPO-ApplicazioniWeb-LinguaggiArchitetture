@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
+    /// <summary>
+    /// CRUD API for Nodes
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -38,9 +41,9 @@ namespace JobScheduler.Controllers.API
         /// <param name="id">The id of the Node to return</param>
         /// <returns>Returns a Node object</returns>
         [HttpGet("{id}")]
-        public ActionResult<Node> Get(int id)
+        public async Task<ActionResult<Node>> Get(int id)
         {
-            Node result = _nodesMethods.GetNodeByIdAsync(id);
+            Node result = await _nodesMethods.GetNodeByIdAsync(id);
             if (result == null)
                 return NotFound();
 

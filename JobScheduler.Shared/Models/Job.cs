@@ -13,7 +13,7 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("Parameters")]
         public string Parameters { get; set; }
         [JsonPropertyName("Nodes")]
-        public string[] Nodes { get; set; } = new string[4];
+        public Node[] Nodes { get; set; }
         [JsonPropertyName("Status")]
         public JobStatus Status { get; set; }
     }

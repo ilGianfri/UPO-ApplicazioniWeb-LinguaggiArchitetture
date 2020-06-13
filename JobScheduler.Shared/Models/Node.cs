@@ -8,7 +8,7 @@ namespace JobScheduler.Shared.Models
     {
         public Node() { }
 
-        public Node(int id, string name, int[] group, NodeRole role)
+        public Node(int id, string name, Group[] group, NodeRole role)
         {
             Id = id;
             Name = name;
@@ -29,9 +29,12 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("IP")]
         public IPAddress IP { get; set; }
         [JsonPropertyName("Group")]
-        public int[] Group { get; set; }
+        public Group[] Group { get; set; }
         [JsonPropertyName("Role")]
         public NodeRole Role { get; set; }
+        [JsonIgnore]
+        [NotMapped]
+        public bool IsChecked { get; set; }
     }
 
     public enum NodeRole

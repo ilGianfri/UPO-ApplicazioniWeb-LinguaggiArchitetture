@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
+    /// <summary>
+    /// CRUD API for Jobs
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin,Editor", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -38,9 +41,9 @@ namespace JobScheduler.Controllers.API
         /// <param name="id">The job id</param>
         /// <returns>Returns a Job object</returns>
         [HttpGet("{id}")]
-        public ActionResult<Job> Get(int id)
+        public async Task<ActionResult<Job>> GetAsync(int id)
         {
-            Job job = _jobMethods.GetJobByIdAsync(id);
+            Job job = await _jobMethods.GetJobByIdAsync(id);
             if (job == null)
                 return NotFound();
 

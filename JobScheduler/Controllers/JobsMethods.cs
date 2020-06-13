@@ -27,9 +27,9 @@ namespace JobScheduler.Controllers
         /// Returns the Job with the specified id
         /// </summary>
         /// <param name="id">The id of the job</param>
-        public Job GetJobByIdAsync(int id)
+        public async Task<Job> GetJobByIdAsync(int id)
         {
-            return _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
+            return await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>

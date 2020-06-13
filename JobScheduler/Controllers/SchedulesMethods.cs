@@ -29,9 +29,9 @@ namespace JobScheduler.Controllers
         /// </summary>
         /// <param name="id">The Schedule id</param>
         /// <returns>Returns a Schedule object</returns>
-        public Schedule GetScheduleByIdAsync(int id)
+        public async Task<Schedule> GetScheduleByIdAsync(int id)
         {
-            return _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
+            return await _dbContext.Schedules.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>

@@ -16,8 +16,6 @@ namespace JobScheduler.Slave.BackgroundWorker
         public JobsScheduler(ILogger<JobsScheduler> logger)
         {
             _logger = logger;
-
-
         }
 
         public void AddJob(Schedule schedule)

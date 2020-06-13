@@ -31,7 +31,7 @@ namespace JobScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<IdentityUser>(options => options.User.RequireUniqueEmail = true)
                 .AddRoles<IdentityRole>()
@@ -48,6 +48,7 @@ namespace JobScheduler
             services.AddScoped<NodesMethods>();
             services.AddScoped<JobsMethods>();
             services.AddScoped<SchedulesMethods>();
+            services.AddScoped<GroupsMethods>();
 
             services.AddScoped<DataSeed>();
 

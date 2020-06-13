@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
+    /// <summary>
+    /// CRUD API for Users
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

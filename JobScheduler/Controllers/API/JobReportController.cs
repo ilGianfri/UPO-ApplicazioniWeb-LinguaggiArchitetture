@@ -1,17 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using JobScheduler.Shared.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace JobScheduler.Controllers.API
 {
+    /// <summary>
+    /// API userd by slaves to save a Job result
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class JobResultController : ControllerBase
+    public class JobReportController : ControllerBase
     {
+        private readonly JobReportMethods _jobReports;
+        public JobReportController(JobReportMethods jobReports)
+        {
+            _jobReports = jobReports;
+        }
+
         // GET: api/<JobResultController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<JobReport>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await _jobReports.GetJobReportsAsync());
         }
 
         // GET api/<JobResultController>/5

@@ -31,9 +31,9 @@ namespace JobScheduler.Controllers
         /// </summary>
         /// <param name="id">The id of the Node to return</param>
         /// <returns>Returns a Node object</returns>
-        public Node GetNodeByIdAsync(int id)
+        public async Task<Node> GetNodeByIdAsync(int id)
         {
-            return _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
+            return await _dbContext.Nodes.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>

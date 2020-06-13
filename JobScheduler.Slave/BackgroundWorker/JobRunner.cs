@@ -38,12 +38,10 @@ namespace JobScheduler.Slave.BackgroundWorker
                                 jobProcess.StartInfo.Arguments = nextSchedule.Job.Parameters;
                                 jobProcess.StartInfo.UseShellExecute = false;
                                 jobProcess.StartInfo.RedirectStandardOutput = true;
+                                jobProcess.Exited += JobProcess_Exited;
                                 jobProcess.Start();
 
-                                //TODO: Save result
-                                Console.WriteLine(jobProcess.StandardOutput.ReadToEnd());
-
-                                jobProcess.WaitForExit();
+                                //TODO: Send details to Master
                             }
                             await Task.Delay(5000, stoppingToken); //5 seconds delay
                         }
@@ -51,6 +49,13 @@ namespace JobScheduler.Slave.BackgroundWorker
                 }
             }
             while (!stoppingToken.IsCancellationRequested);
+        }
+
+        private void JobProcess_Exited(object sender, EventArgs e)
+        {
+            Process p = (Process)sender;
+            //TODO: Save result
+            Console.WriteLine(p.StandardOutput.ReadToEnd());
         }
     }
 }
