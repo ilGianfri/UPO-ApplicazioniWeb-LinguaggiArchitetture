@@ -140,6 +140,12 @@
 
     private async void SaveSchedule()
     {
+        if (CrontabSchedule.TryParse(CurrentSchedule.Cron) == null)
+        {
+            ErrorMessage = $"Error: The specified CRON syntax is not valid.";
+            return;
+        }
+
         //Edit
         if (IsEditSchedule)
         {
