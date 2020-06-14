@@ -25,10 +25,11 @@
                     <td>@node.Name</td>
                     <td>@node.IPStr</td>
                     <td>@node.Port</td>
-                    <td>
-                        @if (node.Group != null)
-                        {<span>@string.Join(",", node.Group.Select(x => x.Name))</span>}
-                </td>
+                    <td>@if (node.Group != null && node.Group.Count > 0)
+                        {
+                            <span>@string.Join(",", node.Group.Select(x => x.Name))</span>
+                        }
+                    </td>
                 <td>@node.Role</td>
                 <td>
                     <button class="btn btn-primary"
@@ -172,6 +173,9 @@
         ErrorMessage = string.Empty;
 
         StateHasChanged();
+
+        if (ExistingGroups != null)
+            ExistingGroups.ForEach(x => x.IsChecked = false);
 
         await GetNodes();
     }
