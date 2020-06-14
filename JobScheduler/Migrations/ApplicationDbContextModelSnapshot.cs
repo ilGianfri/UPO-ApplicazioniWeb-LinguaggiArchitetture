@@ -118,9 +118,6 @@ namespace JobScheduler.Migrations
                     b.Property<int?>("JobId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("When")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.HasIndex("JobId");

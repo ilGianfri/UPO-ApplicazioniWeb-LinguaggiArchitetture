@@ -178,7 +178,7 @@
         if (job.Nodes != null)
         {
             ExistingNodes.Where(n => job.Nodes.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
-            ShowPopup = true;
         }
+        ShowPopup = true;
     }
 }

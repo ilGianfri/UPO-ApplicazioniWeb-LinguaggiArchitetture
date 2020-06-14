@@ -6,15 +6,16 @@ namespace JobScheduler.Shared.Models
 {
     public class Schedule
     {
-        public Schedule()
-        {
-            Job = new Job();
-        }
+        //public Schedule()
+        //{
+        //    Job = new Job();
+        //}
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("Id")]
         public int Id { get; set; }
         [JsonPropertyName("When")]
+        [NotMapped]
         public DateTime When { get; set; }
         [JsonPropertyName("Job")]
         public Job Job { get; set; }
