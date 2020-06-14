@@ -24,7 +24,7 @@
                 <td>@job.Id</td>
                 <td>@job.Path</td>
                 <td>@job.Parameters</td>
-                <td>@if (job.Nodes != null) @string.Join(",", job.Nodes.Select(x => x.Name));</td>
+                <td>@if (job.Nodes != null) @string.Join(",", job.Nodes.Select(x => x.Name))</td>
                 <td>@job.Status</td>
                 <td>
                     <button class="btn btn-primary"
