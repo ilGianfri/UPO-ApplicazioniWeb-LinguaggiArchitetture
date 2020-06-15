@@ -57,7 +57,7 @@ namespace JobScheduler.Controllers.API
         /// </summary>
         /// <param name="schedule">A Schedule object</param>
         /// <returns>Returns the newly created Schedule object</returns>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult<Schedule>> Post([FromBody] Schedule schedule)
         {
             if (schedule == null)

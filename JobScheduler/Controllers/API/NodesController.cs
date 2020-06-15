@@ -56,7 +56,7 @@ namespace JobScheduler.Controllers.API
         /// </summary>
         /// <param name="node">The Node object to create</param>
         /// <returns>Returns 201 if created successfully otherwise 400</returns>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult> Post([FromBody] Node node)
         {
             if (node == null)

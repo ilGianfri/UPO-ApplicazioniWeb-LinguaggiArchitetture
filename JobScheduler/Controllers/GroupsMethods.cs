@@ -74,8 +74,6 @@ namespace JobScheduler.Controllers
             {
                 group = editedGroup;
                 var res = await _dbContext.SaveChangesAsync();
-                if (res > 0)
-                    return group;
             }
             return group;
         }

@@ -56,7 +56,7 @@ namespace JobScheduler.Controllers.API
         /// </summary>
         /// <param name="newJob">A Job object</param>
         /// <returns>Returns 201 if succesful, otherwise 400.</returns>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult> Post([FromBody] Job newJob)
         {
             if (newJob == null)

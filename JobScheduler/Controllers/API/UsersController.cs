@@ -60,7 +60,7 @@ namespace JobScheduler.Controllers.API
         /// Creates a new user
         /// </summary>
         /// <param name="newUser">A UserWithRole object containing the new user details (and the Role to assign him)</param>
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<ActionResult> PostCreate([FromBody] UserWithRole newUser)
         {
             if (newUser == null)
