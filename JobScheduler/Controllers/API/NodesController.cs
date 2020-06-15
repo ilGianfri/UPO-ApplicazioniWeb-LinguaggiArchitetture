@@ -50,7 +50,7 @@ namespace JobScheduler.Controllers.API
             return Ok(result);
         }
 
-        // POST api/<NodesController>
+        // POST api/<NodesController>/create
         /// <summary>
         /// Creates a new Node
         /// </summary>

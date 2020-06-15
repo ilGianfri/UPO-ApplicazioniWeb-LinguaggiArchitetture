@@ -55,7 +55,7 @@ namespace JobScheduler.Controllers.API
             return NotFound();
         }
 
-        // POST api/<UsersController>
+        // POST api/<UsersController>/create
         /// <summary>
         /// Creates a new user
         /// </summary>

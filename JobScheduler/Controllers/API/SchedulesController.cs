@@ -51,7 +51,7 @@ namespace JobScheduler.Controllers.API
             return Ok(result);
         }
 
-        // POST api/<SchedulesController>
+        // POST api/<SchedulesController>/create
         /// <summary>
         /// Creates a new Schedule
         /// </summary>

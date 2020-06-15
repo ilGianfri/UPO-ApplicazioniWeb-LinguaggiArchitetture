@@ -33,7 +33,7 @@ namespace JobScheduler.Controllers.API
             return Ok(await _jobReports.GetJobReportAsync(id));
         }
 
-        // POST api/<JobResultController>
+        // POST api/<JobResultController>/create
         [HttpPost("create")]
         public async Task<ActionResult> Post([FromBody] JobReport value)
         {
