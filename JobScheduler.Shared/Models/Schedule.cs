@@ -6,11 +6,6 @@ namespace JobScheduler.Shared.Models
 {
     public class Schedule
     {
-        //public Schedule()
-        //{
-        //    Job = new Job();
-        //}
-
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("Id")]
         public int Id { get; set; }

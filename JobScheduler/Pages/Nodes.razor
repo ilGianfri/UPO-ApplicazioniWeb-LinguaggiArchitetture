@@ -25,15 +25,15 @@
                     <td>@node.Name</td>
                     <td>@node.IPStr</td>
                     <td>@node.Port</td>
-                    <td>@if (node.Group != null && node.Group.Count > 0)
-                        {
+                    <td>@if (node.Group != null)
+                    {
+                        var a = node.Group;
                             <span>@string.Join(",", node.Group.Select(x => x.Name))</span>
                         }
                     </td>
                 <td>@node.Role</td>
                 <td>
-                    <button class="btn btn-primary"
-                            @onclick="(() => { IsEditNode = true; EditNode(node); })">
+                    <button class="btn btn-primary" @onclick="(() => { IsEditNode = true; EditNode(node); })">
                         Edit
                     </button>
                 </td>
@@ -63,14 +63,11 @@
                             <p>Id: @CurrentNode.Id</p>
                         }
                         Name: <input class="form-control" type="text"
-                                     placeholder="Name"
-                                     @bind="CurrentNode.Name" />
+                                     placeholder="Name" @bind="CurrentNode.Name" />
                         IP: <input class="form-control" type="text"
-                                   placeholder="IP"
-                                   @bind="CurrentNode.IPStr" />
+                                   placeholder="IP" @bind="CurrentNode.IPStr" />
                         Port: <input class="form-control" type="text"
-                                     placeholder="eg. 8080"
-                                     @bind="CurrentNode.Port" />
+                                     placeholder="eg. 8080" @bind="CurrentNode.Port" />
                         Group: <br/>@foreach (Group group in ExistingGroups)
                         {
                             <input type="checkbox" id="@group.Id" name="@group.Name" value="@group.Name" @bind="@group.IsChecked" /> @group.Name
@@ -86,16 +83,14 @@
                         </select>
                         <br /><br />
                         <!-- Button to save the node -->
-                        <button class="btn btn-primary"
-                                @onclick="SaveNode">
+                        <button class="btn btn-primary" @onclick="SaveNode">
                             Save
                         </button>
                         <!-- Only show delete button if not a new record -->
                         @if (IsEditNode)
                         {
                             <!-- Button to delete the node -->
-                            <button class="btn btn-danger"
-                                    @onclick="DeleteNode">
+                            <button class="btn btn-danger" @onclick="DeleteNode">
                                 Delete
                             </button>
                         }
@@ -138,7 +133,6 @@
     {
         if (IsEditNode)
         {
-            CurrentNode.IP = null;
             CurrentNode.Group = ExistingGroups.Where(x => x.IsChecked).ToList();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
@@ -172,10 +166,9 @@
         CurrentNode = new Node();
         ErrorMessage = string.Empty;
 
-        StateHasChanged();
+        //StateHasChanged();
 
-        if (ExistingGroups != null)
-            ExistingGroups.ForEach(x => x.IsChecked = false);
+        ExistingGroups.ForEach(x => x.IsChecked = false);
 
         await GetNodes();
     }

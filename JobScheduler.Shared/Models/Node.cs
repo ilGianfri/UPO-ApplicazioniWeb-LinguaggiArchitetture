@@ -8,7 +8,6 @@ namespace JobScheduler.Shared.Models
     public class Node
     {
         public Node() { }
-
         public Node(int id, string name, List<Group> group, NodeRole role)
         {
             Id = id;
@@ -16,6 +15,7 @@ namespace JobScheduler.Shared.Models
             Group = group;
             Role = role;
         }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("Id")]
         public int Id { get; set; }
@@ -28,9 +28,9 @@ namespace JobScheduler.Shared.Models
 
         [NotMapped]
         [JsonPropertyName("IP")]
-        public IPAddress IP { get; set; }
+        public IPAddress IP { get; set; } = null;
         [JsonPropertyName("Group")]
-        public List<Group> Group { get; set; }
+        public List<Group> Group { get; set; } = new List<Group>();
         [JsonPropertyName("Role")]
         public NodeRole Role { get; set; }
         [JsonIgnore]

@@ -140,6 +140,7 @@
         //Edit
         if (IsEditJob)
         {
+            CurrentJob.Nodes = ExistingNodes.Where(x => x.IsChecked = true).ToList();
             var response = await jobsMethods.EditJobAsync(CurrentJob.Id, CurrentJob);
             if (response != null)
             {

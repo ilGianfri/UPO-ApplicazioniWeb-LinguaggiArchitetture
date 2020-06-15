@@ -9,11 +9,5 @@ namespace JobScheduler.Shared.Models
         public IdentityUser User { get; set; }
         [JsonPropertyName("Role")]
         public string Role { get; set; }
-
-        public UserWithRole()
-        {
-            User = new IdentityUser();
-            Role = string.Empty;
-        }
     }
 }
