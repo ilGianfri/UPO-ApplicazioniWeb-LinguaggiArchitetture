@@ -125,7 +125,8 @@ namespace JobScheduler
             var seed = scope.ServiceProvider.GetService<DataSeed>();
             await seed.SeedAsync();
 
-            //var scheduler = scope.ServiceProvider.GetService<JobsScheduler>();
+            //Background worker that runs jobs on the master or sends them to slaves
+            scope.ServiceProvider.GetService<JobsScheduler>();
         }
     }
 }
