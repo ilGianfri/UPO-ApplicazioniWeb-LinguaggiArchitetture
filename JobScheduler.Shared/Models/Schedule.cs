@@ -1,20 +1,16 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
 {
-    public class Schedule
+    public partial class Schedule
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonPropertyName("Id")]
         public int Id { get; set; }
-        [JsonPropertyName("When")]
+        public int? JobId { get; set; }
+        public string Cron { get; set; }
         [NotMapped]
         public DateTime When { get; set; }
-        [JsonPropertyName("Job")]
-        public Job Job { get; set; }
-        [JsonPropertyName("Cron")]
-        public string Cron { get; set; }
+        public virtual Job Job { get; set; }
     }
 }

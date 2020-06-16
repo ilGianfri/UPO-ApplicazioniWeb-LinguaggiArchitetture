@@ -23,7 +23,7 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Node objects</returns>
         public async Task<IEnumerable<Node>> GetNodesAsync()
         {
-            return await _dbContext.Nodes.ToListAsync();
+            return await _dbContext.Nodes.Include(x => x.GroupNodes).ToListAsync();
         }
 
         /// <summary>
@@ -60,10 +60,7 @@ namespace JobScheduler.Controllers
             Node node = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
             if (node != null)
             {
-                node.IPStr = editedNode.IPStr;
-                node.Group = editedNode.Group;
-                node.Name = editedNode.Name;
-                node.Role = editedNode.Role;
+                node = editedNode;
 
                 await _dbContext.SaveChangesAsync();
             }

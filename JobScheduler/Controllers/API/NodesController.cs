@@ -62,8 +62,6 @@ namespace JobScheduler.Controllers.API
             if (node == null)
                 return BadRequest();
 
-            node.IP = IPAddress.Parse(node.IPStr);
-
             bool created = await _nodesMethods.CreateNodeAsync(node);
 
             return created ? StatusCode(201) : StatusCode(400);

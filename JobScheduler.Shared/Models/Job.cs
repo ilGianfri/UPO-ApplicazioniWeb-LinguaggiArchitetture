@@ -1,22 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
 {
-    public class Job
+    public partial class Job
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonPropertyName("Id")]
         public int Id { get; set; }
-        [JsonPropertyName("Path")]
         public string Path { get; set; }
-        [JsonPropertyName("Parameters")]
         public string Parameters { get; set; }
-        [JsonPropertyName("Nodes")]
-        public List<Node> Nodes { get; set; }
-        [JsonPropertyName("Status")]
         public JobStatus Status { get; set; }
+        public virtual Group Group { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; } = new HashSet<Schedule>();
+        public virtual ICollection<Node> Nodes { get; set; } = new HashSet<Node>();
     }
 
     public enum JobStatus

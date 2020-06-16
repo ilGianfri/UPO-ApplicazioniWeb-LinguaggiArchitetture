@@ -1,6 +1,6 @@
 ﻿@page "/nodes"
 @inject NodesMethods nodesMethods
-@inject GroupsMethods groupMethods 
+@inject GroupsMethods groupMethods
 
 <AuthorizeView Roles="Admin, Editor">
     <h3>Nodes</h3>
@@ -25,12 +25,12 @@
                     <td>@node.Name</td>
                     <td>@node.IPStr</td>
                     <td>@node.Port</td>
-                    <td>@if (node.Group != null)
-                    {
-                        var a = node.Group;
-                            <span>@string.Join(",", node.Group.Select(x => x.Name))</span>
+                    <td>
+                        @if (node.GroupNodes != null)
+                        {
+                            <span>@string.Join(",", node.GroupNodes.Select(x => x.Group.Name))</span>
                         }
-                    </td>
+                </td>
                 <td>@node.Role</td>
                 <td>
                     <button class="btn btn-primary" @onclick="(() => { IsEditNode = true; EditNode(node); })">
@@ -38,7 +38,7 @@
                     </button>
                 </td>
             </tr>
-            }
+        }
         </tbody>
     </table>
 
@@ -68,7 +68,7 @@
                                    placeholder="IP" @bind="CurrentNode.IPStr" />
                         Port: <input class="form-control" type="text"
                                      placeholder="eg. 8080" @bind="CurrentNode.Port" />
-                        Group: <br/>@foreach (Group group in ExistingGroups)
+                        Group: <br />@foreach (Group group in ExistingGroups)
                         {
                             <input type="checkbox" id="@group.Id" name="@group.Name" value="@group.Name" @bind="@group.IsChecked" /> @group.Name
                             <br>}
@@ -94,7 +94,7 @@
                                 Delete
                             </button>
                         }
-                        <br/>
+                        <br />
                         <span style="color:red">@ErrorMessage</span>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
     {
         if (IsEditNode)
         {
-            CurrentNode.Group = ExistingGroups.Where(x => x.IsChecked).ToList();
+            CurrentNode.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id, Group = y, Node = CurrentNode }).ToList();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
             {
@@ -144,7 +144,7 @@
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
-            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, Group = ExistingGroups.Where(x => x.IsChecked).ToList() };
+            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id, Group = y, Node = CurrentNode }).ToList() };
 
             var response = await nodesMethods.CreateNodeAsync(node);
             if (response)
@@ -191,7 +191,8 @@
         CurrentNodeRole = node.Role == 0 ? "Master" : "Slave";
         ShowPopup = true;
 
-        if (node.Group != null)
-            ExistingGroups.Where(n => node.Group.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
+        //TODO
+        //if (node.GroupNodes != null)
+        //    ExistingGroups.Where(n => node.Group.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
     }
 }

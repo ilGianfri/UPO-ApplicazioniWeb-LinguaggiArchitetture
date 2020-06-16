@@ -1,0 +1,47 @@
+﻿{
+   "ContextClassName": "ApplicationDbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "DoNotCombineNamespace": false,
+   "IdReplace": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Data",
+   "ProjectRootNamespace": "JobScheduler",
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "HasPrimaryKey": true,
+         "Name": "GroupNodes"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "Groups"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "JobReports"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "Jobs"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "Nodes"
+      },
+      {
+         "HasPrimaryKey": true,
+         "Name": "Schedules"
+      }
+   ],
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseSpatial": false
+}

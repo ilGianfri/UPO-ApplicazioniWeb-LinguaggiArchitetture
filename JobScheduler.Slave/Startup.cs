@@ -1,4 +1,3 @@
-using JobScheduler.Slave.BackgroundWorker;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +24,6 @@ namespace JobScheduler.Slave
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler Slave API", Version = "v1", Description = "This is the API exposed by slave nodes" });
             });
-
-            services.AddSingleton<JobsScheduler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

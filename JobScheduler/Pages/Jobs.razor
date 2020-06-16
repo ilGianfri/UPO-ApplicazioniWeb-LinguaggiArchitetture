@@ -1,7 +1,7 @@
 ﻿@page "/jobs"
 @inject IHttpContextAccessor httpContextAccessor
 @inject JobsMethods jobsMethods
-@inject NodesMethods nodesMethods 
+@inject GroupsMethods groupsMethods
 
 <AuthorizeView Roles="Admin, Editor">
     <h3>Jobs</h3>
@@ -12,7 +12,7 @@
                 <th>Id</th>
                 <th>Path</th>
                 <th>Parameters</th>
-                <th>Nodes</th>
+                <th>Group</th>
                 <th>Status</th>
                 <th></th>
             </tr>
@@ -20,19 +20,19 @@
         <tbody>
             @foreach (Job job in ExistingJobs)
             {
-            <tr>
-                <td>@job.Id</td>
-                <td>@job.Path</td>
-                <td>@job.Parameters</td>
-                <td>@if (job.Nodes != null) @string.Join(",", job.Nodes.Select(x => x.Name))</td>
-                <td>@job.Status</td>
-                <td>
-                    <button class="btn btn-primary"
-                            @onclick="(() => { IsEditJob = true; EditJob(job); })">
-                        Edit
-                    </button>
-                </td>
-            </tr>
+                <tr>
+                    <td>@job.Id</td>
+                    <td>@job.Path</td>
+                    <td>@job.Parameters</td>
+                    <td>@if (job.Group != null)@job.Group.Name</td>
+                    <td>@job.Status</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditJob = true; EditJob(job); })">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -64,11 +64,12 @@
                         Parameters: <input class="form-control" type="text"
                                            placeholder="Parameters"
                                            @bind="CurrentJob.Parameters" />
-                        Nodes: <br/>@foreach (Node node in ExistingNodes)
-                        {
-                            <input type="checkbox" id="@node.Id" name="@node.Name" value="@node.Name" @bind="@node.IsChecked"/> @node.Name
-                    <br />
-                        }
+                        Group: <br/><select class="form-control" @bind="SelectedGroupId">
+                            @foreach (Group group in ExistingGroups)
+                            {
+                                <option value="@group.Id"> @group.Name </option>
+                            }
+                        </select>
                         <!-- Button to save the node -->
                         <button class="btn btn-primary" @onclick="SaveJob">
                             Save
@@ -82,7 +83,7 @@
                                 Delete
                             </button>
                         }
-                        <br />
+                        <br/>
                         <span style="color:red">@ErrorMessage</span>
                     </div>
                 </div>
@@ -92,15 +93,16 @@
     <button class="btn btn-success" @onclick="CreateJob">Create Job</button>
 </AuthorizeView>
 
-@code 
+@code
 {
     private List<Job> ExistingJobs = new List<Job>();
-    private List<Node> ExistingNodes = new List<Node>();
+    private List<Group> ExistingGroups = new List<Group>();
     private Job CurrentJob = new Job();
     private bool IsEditJob { get; set; } = false;
     private string ErrorMessage { get; set; } = string.Empty;
     private bool ShowPopup { get; set; } = false;
     private string DialogTitle { get; set; } = "New Job";
+    private int SelectedGroupId { get; set; } = -1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,7 +118,7 @@
         ErrorMessage = string.Empty;
         //CurrentJobNodesNames = string.Empty;
 
-        ExistingNodes = ExistingNodes.Select(c => { c.IsChecked = false; return c; }).ToList();
+        ExistingGroups = ExistingGroups.Select(c => { c.IsChecked = false; return c; }).ToList();
 
         StateHasChanged();
 
@@ -140,7 +142,7 @@
         //Edit
         if (IsEditJob)
         {
-            CurrentJob.Nodes = ExistingNodes.Where(x => x.IsChecked = true).ToList();
+            CurrentJob.Group = ExistingGroups.FirstOrDefault(x => x.Id == SelectedGroupId);
             var response = await jobsMethods.EditJobAsync(CurrentJob.Id, CurrentJob);
             if (response != null)
             {
@@ -150,7 +152,7 @@
         }
         else //New
         {
-            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Nodes = ExistingNodes.Where(x => x.IsChecked = true).ToList() };
+            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, Group = ExistingGroups.FirstOrDefault(x => x.Id == SelectedGroupId) };
 
             var response = await jobsMethods.CreateJobAsync(job);
             if (response)
@@ -168,7 +170,7 @@
 
     private async Task GetNodes()
     {
-        ExistingNodes = (await nodesMethods.GetNodesAsync()).ToList();
+        ExistingGroups = (await groupsMethods.GetGroupsAsync()).ToList();
     }
 
     private void EditJob(Job job)
@@ -176,9 +178,10 @@
         DialogTitle = "Edit Job";
         CurrentJob = job;
         IsEditJob = true;
-        if (job.Nodes != null)
+        if (job.Group != null)
         {
-            ExistingNodes.Where(n => job.Nodes.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
+            //TODO
+            //ExistingGroups.Where(n => job.Nodes.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
         }
         ShowPopup = true;
     }

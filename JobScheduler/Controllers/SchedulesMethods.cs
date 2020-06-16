@@ -21,7 +21,7 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Schedule objects</returns>
         public async Task<IEnumerable<Schedule>> GetSchedulesAsync()
         {
-            return await _dbContext.Schedules.ToListAsync();
+            return await _dbContext.Schedules.Include(Schedule => Schedule.Job).ToListAsync();
         }
 
         /// <summary>

@@ -4,28 +4,84 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JobScheduler.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public partial class ApplicationDbContext : IdentityDbContext
     {
+        public ApplicationDbContext()
+        {
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        public DbSet<Node> Nodes { get; set; }
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<Schedule> Schedules { get; set; }
-        public DbSet<JobReport> JobReports { get; set; }
-        public DbSet<Group> Groups { get; set; }
+        public virtual DbSet<GroupNode> GroupNodes { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<JobReport> JobReports { get; set; }
+        public virtual DbSet<Job> Jobs { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        public virtual DbSet<Node> Nodes { get; set; }
+        public virtual DbSet<Schedule> Schedules { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            builder.Entity<Node>().ToTable("Nodes").HasKey(x => x.Id);
-            builder.Entity<Job>().ToTable("Jobs").HasKey(x => x.Id);
-            builder.Entity<Schedule>().ToTable("Schedules").HasKey(x => x.Id);
-            builder.Entity<JobReport>().ToTable("JobReports").HasKey(x => x.Id);
-            builder.Entity<Group>().ToTable("Groups").HasKey(x => x.Id);
+            base.OnModelCreating(modelBuilder);
 
-            base.OnModelCreating(builder);
+            modelBuilder.Entity<GroupNode>(entity =>
+            {
+                entity.HasKey(e => new { e.GroupId, e.NodeId });
+
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupNodes)
+                    .HasForeignKey(d => d.GroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.Node)
+                    .WithMany(p => p.GroupNodes)
+                    .HasForeignKey(d => d.NodeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<Group>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<JobReport>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Job>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            });
+
+            modelBuilder.Entity<Node>(entity =>
+            {
+                entity.HasIndex(e => e.JobId);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.Nodes)
+                    .HasForeignKey(d => d.JobId);
+            });
+
+            modelBuilder.Entity<Schedule>(entity =>
+            {
+                entity.HasIndex(e => e.JobId);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.HasOne(d => d.Job)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.JobId);
+            });
+
+            OnModelCreatingPartial(modelBuilder);
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

@@ -2,96 +2,99 @@
 @inject SchedulesMethods schedulesMethods
 @inject JobsMethods jobMethods
 
-    <AuthorizeView Roles="Admin, Editor">
-        <h3>Schedules</h3>
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Schedules</h3>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>When</th>
-                    <th>Job</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Schedule schedule in ExistingSchedules)
-                {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>When</th>
+                <th>Job</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Schedule schedule in ExistingSchedules)
+            {
                 <tr>
                     <td>@schedule.Id</td>
-                    <td>@if (!string.IsNullOrEmpty(schedule.Cron)) {<span>@ExpressionDescriptor.GetDescription(schedule.Cron);</span>}</td>
-                    <td>@schedule.Job.Path</td>
                     <td>
-                        <button class="btn btn-primary"
-                                @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
-                            Edit
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-primary"
-                                @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
-                            Run Now
-                        </button>
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+                        @if (!string.IsNullOrEmpty(schedule.Cron))
+                        {<span>@ExpressionDescriptor.GetDescription(schedule.Cron);</span>}
+                </td>
+                <td>@schedule.Job.Path</td>
+                <td>
+                    <button class="btn btn-primary"
+                            @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                        Edit
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-primary"
+                            @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                        Run Now
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 
-        @if (ShowPopup)
-        {
-            <!-- This is the popup to create or edit a schedule -->
-            <div class="modal" tabindex="-1" style="display:block" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3 class="modal-title">@DialogTitle</h3>
-                            <!-- Button to close the popup -->
-                            <button type="button" class="close"
-                                    @onclick="ClosePopup">
-                                <span aria-hidden="true">X</span>
-                            </button>
-                        </div>
-                        <!-- Edit form for the current schedule -->
-                        <div class="modal-body">
-                            <!-- Only show Id if not a new schedule -->
-                            @if (CurrentSchedule.Id != 0)
+    @if (ShowPopup)
+    {
+        <!-- This is the popup to create or edit a schedule -->
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">@DialogTitle</h3>
+                        <!-- Button to close the popup -->
+                        <button type="button" class="close"
+                                @onclick="ClosePopup">
+                            <span aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <!-- Edit form for the current schedule -->
+                    <div class="modal-body">
+                        <!-- Only show Id if not a new schedule -->
+                        @if (CurrentSchedule.Id != 0)
+                        {
+                            <p>Id: @CurrentSchedule.Id</p>
+                        }
+                        When: <input class="form-control" type="text"
+                                     placeholder="CRON"
+                                     @bind="CurrentSchedule.Cron" />
+                        Job: <select class="form-control" @bind="SelectedId">
+                            @foreach (Job job in AvailableJobs)
                             {
-                                <p>Id: @CurrentSchedule.Id</p>
+                                <option value="@job.Id"> @job.Path </option>
                             }
-                            When: <input class="form-control" type="text"
-                                         placeholder="CRON"
-                                         @bind="CurrentSchedule.Cron" />
-                            Job: <select class="form-control" @bind="SelectedId">
-                                @foreach (Job job in AvailableJobs)
-                                {
-                                    <option value="@job.Id"> @job.Path </option>
-                                }
-                            </select>
-                            <!-- Button to save the schedule -->
-                            <button class="btn btn-primary"
-                                    @onclick="SaveSchedule">
-                                Save
+                        </select>
+                        <!-- Button to save the schedule -->
+                        <button class="btn btn-primary"
+                                @onclick="SaveSchedule">
+                            Save
+                        </button>
+                        <!-- Only show delete button if not a new record -->
+                        @if (IsEditSchedule)
+                        {
+                            <!-- Button to delete the schedule -->
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteSchedule">
+                                Delete
                             </button>
-                            <!-- Only show delete button if not a new record -->
-                            @if (IsEditSchedule)
-                            {
-                                <!-- Button to delete the schedule -->
-                                <button class="btn btn-danger"
-                                        @onclick="DeleteSchedule">
-                                    Delete
-                                </button>
-                            }
-                            <br />
-                            <span style="color:red">@ErrorMessage</span>
-                        </div>
+                        }
+                        <br />
+                        <span style="color:red">@ErrorMessage</span>
                     </div>
                 </div>
             </div>
-        }
-        <button class="btn btn-success" @onclick="CreateSchedule">Create Schedule</button>
-    </AuthorizeView>
+        </div>
+    }
+    <button class="btn btn-success" @onclick="CreateSchedule">Create Schedule</button>
+</AuthorizeView>
 
 @code {
     private List<Schedule> ExistingSchedules = new List<Schedule>();
@@ -141,12 +144,6 @@
         if (CrontabSchedule.TryParse(CurrentSchedule.Cron) == null)
         {
             ErrorMessage = $"Error: The specified CRON syntax is not valid.";
-            return;
-        }
-
-        if (CurrentSchedule.Job == null)
-        {
-            ErrorMessage = $"Error: No job has been specified";
             return;
         }
 

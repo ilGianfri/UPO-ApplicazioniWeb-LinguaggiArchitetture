@@ -1,4 +1,5 @@
 using JobScheduler.Areas.Identity;
+using JobScheduler.BackgroundWorker;
 using JobScheduler.Controllers;
 using JobScheduler.Data;
 using Microsoft.AspNetCore.Builder;
@@ -39,19 +40,24 @@ namespace JobScheduler
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+            
+            //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //services.AddHttpContextAccessor();
             //services.AddSingleton<HttpClient>();
 
-            services.AddScoped<UserMethods>();
-            services.AddScoped<NodesMethods>();
-            services.AddScoped<JobsMethods>();
-            services.AddScoped<SchedulesMethods>();
-            services.AddScoped<GroupsMethods>();
+            services.TryAddScoped<UserMethods>();
+            services.TryAddScoped<NodesMethods>();
+            services.TryAddScoped<JobsMethods>();
+            services.TryAddScoped<SchedulesMethods>();
+            services.TryAddScoped<GroupsMethods>();
+            services.TryAddScoped<JobReportMethods>();
 
-            services.AddScoped<DataSeed>();
+            services.TryAddScoped<JobsScheduler>();
+            services.TryAddScoped<JobRunner>();
+
+            services.TryAddScoped<DataSeed>();
 
             services.AddSwaggerGen(c =>
             {
@@ -118,6 +124,8 @@ namespace JobScheduler
             using var scope = app.ApplicationServices.CreateScope();
             var seed = scope.ServiceProvider.GetService<DataSeed>();
             await seed.SeedAsync();
+
+            //var scheduler = scope.ServiceProvider.GetService<JobsScheduler>();
         }
     }
 }

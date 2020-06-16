@@ -17,10 +17,10 @@ namespace JobScheduler.Slave
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                })
-            .ConfigureServices(services =>
-            {
-                services.AddHostedService<JobRunner>();
-            });
+                });
+            //.ConfigureServices(services =>
+            //{
+            //    services.AddHostedService<JobRunner>();
+            //});
     }
 }
