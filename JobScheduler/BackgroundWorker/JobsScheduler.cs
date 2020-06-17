@@ -74,7 +74,8 @@ namespace JobScheduler.BackgroundWorker
             //Run job
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job, token);
+
+            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job, token);
 
             RemoveExecutedJob();
             UpdateWakeUpTimer();

@@ -74,6 +74,49 @@ namespace JobScheduler.Controllers.API
             return StatusCode(201);
         }
 
+        /// <summary>
+        /// Kills a job given its id
+        /// </summary>
+        /// <param name="id">Job id</param>
+        /// <returns></returns>
+        [HttpPost("kill/{id}")]
+        public async Task<ActionResult> PostKillId(int id)
+        {
+            try
+            {
+                await _jobMethods.KillRunningJobById(id);
+
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            //Accepted
+            return StatusCode(202);
+        }
+
+        /// <summary>
+        /// Kills a job given its PID
+        /// </summary>
+        /// <param name="id">The job PID</param>
+        /// <returns></returns>
+        [HttpPost("kill/pid/{id}")]
+        public async Task<ActionResult> PostKillPid(int id)
+        {
+            try
+            {
+                await _jobMethods.KillRunningJobByPid(id);
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            //Accepted
+            return StatusCode(202);
+        }
+
         // PUT api/<JobsController>/5
         /// <summary>
         /// Edits an existing Job identified by its id

@@ -19,41 +19,41 @@ namespace JobScheduler.Controllers.API
             _jobReports = jobReports;
         }
 
-        // GET: api/<JobResultController>
+        // GET: api/<JobReportsController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<JobReport>>> Get()
         {
             return Ok(await _jobReports.GetJobReportsAsync());
         }
 
-        // GET api/<JobResultController>/5
+        // GET api/<JobReportsController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<JobReport>> Get(int id)
         {
             return Ok(await _jobReports.GetJobReportAsync(id));
         }
 
-        // POST api/<JobResultController>/create
+        // POST api/<JobReportsController>/create
         [HttpPost("create")]
-        public async Task<ActionResult> Post([FromBody] JobReport value)
+        public async Task<ActionResult<int>> Post([FromBody] JobReport value)
         {
             if (value == null)
                 return BadRequest();
 
             try
             {
-                await _jobReports.CreateJobReportAsync(value);
+                int? reportId = await _jobReports.CreateJobReportAsync(value);
+                
+                return Ok(reportId);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-            return StatusCode(201);
         }
 
-        // PUT api/<JobResultController>/5
-        [HttpPut("{id}")]
+        // PUT api/<JobReportsController>/update/5
+        [HttpPut("update/{id}")]
         public async Task<ActionResult<JobReport>> Put(int id, [FromBody] JobReport value)
         {
             if (value == null)
@@ -66,7 +66,7 @@ namespace JobScheduler.Controllers.API
             return NotFound();
         }
 
-        // DELETE api/<JobResultController>/5
+        // DELETE api/<JobReportsController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

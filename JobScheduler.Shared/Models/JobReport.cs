@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace JobScheduler.Shared.Models
 {
@@ -13,7 +14,7 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("ExitCode")]
         public int? ExitCode { get; set; }
         [JsonPropertyName("Pid")]
-        public long Pid { get; set; }
+        public int? Pid { get; set; }
         [JsonPropertyName("Output")]
         public string Output { get; set; }
     }

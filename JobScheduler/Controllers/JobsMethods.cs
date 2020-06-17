@@ -2,6 +2,7 @@
 using JobScheduler.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +63,45 @@ namespace JobScheduler.Controllers
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Kills the job with the specified id
+        /// </summary>
+        /// <param name="jobId">Job id</param>
+        /// <returns></returns>
+        public async Task<bool> KillRunningJobById(int jobId)
+        {
+            try
+            {
+                //Gets all jobs that haven't completed
+                JobReport runningJob = await _dbContext.JobReports.FirstOrDefaultAsync(x => x.ExitCode == null && x.JobId == jobId);
+                if (runningJob != null && runningJob.Pid.HasValue)
+                {
+                    Process.GetProcessById(runningJob.Pid.Value).Kill();
+                    return true;
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Kills the job with the specified pid
+        /// </summary>
+        /// <param name="jobPid">Job Pid/param>
+        /// <returns></returns>
+        public async Task<bool> KillRunningJobByPid(int jobPid)
+        {
+            try
+            {
+                Process.GetProcessById(jobPid).Kill();
+                return true;
+            }
+            catch { }
+
+            return false;
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace JobScheduler.Shared.Models
     public class UserWithRole
     {
         [JsonPropertyName("User")]
-        public IdentityUser User { get; set; }
+        public IdentityUser User { get; set; } = new IdentityUser();
         [JsonPropertyName("Role")]
         public string Role { get; set; }
     }

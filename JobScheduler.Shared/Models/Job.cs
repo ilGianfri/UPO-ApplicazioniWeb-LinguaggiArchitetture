@@ -29,6 +29,7 @@ namespace JobScheduler.Shared.Models
         Scheduled,
         Running,
         Waiting,
-        Stopped
+        Stopped,
+        Exited
     }
 }

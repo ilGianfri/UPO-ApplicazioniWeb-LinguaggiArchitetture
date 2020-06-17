@@ -1,7 +1,7 @@
 ﻿using JobScheduler.Shared.Models;
 using JobScheduler.Slave.BackgroundWorker;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace JobScheduler.Slave.Controllers.API
@@ -10,60 +10,47 @@ namespace JobScheduler.Slave.Controllers.API
     [ApiController]
     public class JobsController : ControllerBase
     {
-        //private readonly JobsScheduler _jobsScheduler;
-        //public JobsController(JobsScheduler jobsScheduler)
-        //{
-        //    _jobsScheduler = jobsScheduler;
-        //}
-        // GET: api/<JobsController>/running
-        /// <summary>
-        /// Returns the current running Job
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("running")]
-        public async Task<ActionResult<Job>> GetRunningJob()
+        private readonly JobRunner _jobRunner;
+        public JobsController(JobRunner jobRunner)
         {
-            //TODO
-            return null;
+            _jobRunner = jobRunner;
         }
 
-        // GET api/<JobsController>/status/5
+        // GET api/<JobsController>/cancel/5
         /// <summary>
         /// Returns the status of a Job given its id
         /// </summary>
-        /// <param name="id">The Job id</param>
+        /// <param name="id">The Job PID</param>
         /// <returns></returns>
-        [HttpGet("status/{id}")]
-        public async Task<ActionResult<JobStatus>> GetJobStatus(int id)
+        [HttpPost("cancel/{id}")]
+        public ActionResult CancelJob(int id)
         {
-            //TODO
-            return null;
+            try
+            {
+                Process.GetProcessById(id).Kill();
+
+            }
+            catch
+            {
+                return NotFound();
+            }
+
+            //Accepted
+            return StatusCode(202);
         }
 
         // POST api/<JobsController>/start
         /// <summary>
         /// Starts a new Job
         /// </summary>
-        /// <param name="schedule">A Schedule object containing the Job to run</param>
+        /// <param name="job">A Schedule object containing the Job to run</param>
         [HttpPost("start")]
-        public async Task<ActionResult> StartJob([FromBody] Schedule schedule)
+        public async Task<ActionResult> StartJob([FromBody] Job job)
         {
-            //_jobsScheduler.AddJob(DateTime.Now, schedule);
+            await _jobRunner.ExecuteAsync(job);
 
-            return Ok();
-        }
-
-        /// <summary>
-        /// Schedules a new job
-        /// </summary>
-        /// <param name="schedule"></param>
-        /// <returns></returns>
-        [HttpPost("schedule")]
-        public async Task<ActionResult> ScheduleJob([FromBody] Schedule schedule)
-        {
-            //_jobsScheduler.AddJob(DateTime.Now, schedule);
-
-            return Ok();
+            //Accepted
+            return StatusCode(202);
         }
     }
 }
