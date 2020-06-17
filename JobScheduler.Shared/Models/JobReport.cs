@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Threading;
 
 namespace JobScheduler.Shared.Models
 {
@@ -17,5 +16,9 @@ namespace JobScheduler.Shared.Models
         public int? Pid { get; set; }
         [JsonPropertyName("Output")]
         public string Output { get; set; }
+        [JsonPropertyName("StartTime")]
+        public string StartTime { get; set; }
+        [JsonPropertyName("ExitTime")]
+        public string ExitTime { get; set; }
     }
 }

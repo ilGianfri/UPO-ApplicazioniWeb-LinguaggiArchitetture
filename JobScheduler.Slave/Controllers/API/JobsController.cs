@@ -22,7 +22,7 @@ namespace JobScheduler.Slave.Controllers.API
         /// </summary>
         /// <param name="id">The Job PID</param>
         /// <returns></returns>
-        [HttpPost("cancel/{id}")]
+        [HttpPost("kill/{id}")]
         public ActionResult CancelJob(int id)
         {
             try

@@ -19,25 +19,37 @@ namespace JobScheduler.BackgroundWorker
         //Jobs list ordered by time
         public SortedList<DateTime, Schedule> Jobs = new SortedList<DateTime, Schedule>();
 
-        private Timer WakeUpTimer;
+        private Timer WakeUpTimer, UpdateJobsTimer;
         private readonly ILogger<JobsScheduler> _logger;
         private readonly SchedulesMethods _schedulesMethods;
         private readonly JobRunner _jobRunner;
+        private readonly GroupsMethods _groupsMethods;
 
-        public JobsScheduler(SchedulesMethods schedulesMethods, ILogger<JobsScheduler> logger, JobRunner jobRunner)
+        public JobsScheduler(SchedulesMethods schedulesMethods, ILogger<JobsScheduler> logger, JobRunner jobRunner, GroupsMethods groupsMethods)
         {
             _schedulesMethods = schedulesMethods;
             _logger = logger;
             _jobRunner = jobRunner;
+            _groupsMethods = groupsMethods;
 
             PopulateJobsQueue();
+
+            //Updates the Jobs list every minute
+            UpdateJobsTimer = new Timer
+            {
+                Interval = 60000
+            };
+            UpdateJobsTimer.Elapsed += (object sender, ElapsedEventArgs e) => PopulateJobsQueue();
+            UpdateJobsTimer.Start();
         }
 
         /// <summary>
-        /// This methods creates the initial queue (used when the server wakes up for the first time)
+        /// Updates the queue
         /// </summary>
         private async void PopulateJobsQueue()
         {
+            Jobs.Clear();
+
             foreach (Schedule schedule in await _schedulesMethods.GetSchedulesAsync())
                 if (schedule.Job != null) 
                     AddJob(schedule);
@@ -72,10 +84,10 @@ namespace JobScheduler.BackgroundWorker
             WakeUpTimer.Stop();
 
             //Run job
-            CancellationTokenSource source = new CancellationTokenSource();
-            CancellationToken token = source.Token;
-
-            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job, token);
+            var groups = await _groupsMethods.GetGroupsAsync();
+            //var res = groups.SelectMany(x => x.GroupNodes.Where(y => y.GroupId == Jobs.FirstOrDefault().Value.Job.Group.Id));
+            //TODO: Decide where to launch the job
+            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
 
             RemoveExecutedJob();
             UpdateWakeUpTimer();

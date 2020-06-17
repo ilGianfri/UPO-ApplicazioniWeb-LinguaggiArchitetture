@@ -168,7 +168,9 @@
             var schedule = new Schedule { Job = AvailableJobs.FirstOrDefault(x => x.Id == SelectedId), Cron = CurrentSchedule.Cron };
             var response = await schedulesMethods.CreateScheduleAsync(schedule);
             if (response != null)
+            {
                 ClosePopup();
+            }
             else ErrorMessage = $"Error: Could not create this schedule";
         }
     }

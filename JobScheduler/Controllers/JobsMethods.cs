@@ -21,7 +21,7 @@ namespace JobScheduler.Controllers
         /// </summary>
         public async Task<IEnumerable<Job>> GetJobsAsync()
         {
-            return await _dbContext.Jobs.ToListAsync();
+            return await _dbContext.Jobs.Include(x => x.Group).ToListAsync();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace JobScheduler.Controllers
         /// <param name="editedJob">The new job content</param>
         public async Task<Job> EditJobAsync(int id, Job editedJob)
         {
-            Job job = _dbContext.Jobs.FirstOrDefault(x => x.Id == id);
+            Job job = await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id);
             if (job != null)
             {
                 job = editedJob;
@@ -66,23 +66,27 @@ namespace JobScheduler.Controllers
         }
 
         /// <summary>
-        /// Kills the job with the specified id
+        /// Kills jobs with the specified id
         /// </summary>
         /// <param name="jobId">Job id</param>
         /// <returns></returns>
         public async Task<bool> KillRunningJobById(int jobId)
         {
-            try
+            //Gets all jobs that haven't completed with given id
+            var runningJobs = await _dbContext.JobReports.Where(x => x.ExitTime == null && x.JobId == jobId).ToListAsync();
+            if (runningJobs != null)
             {
-                //Gets all jobs that haven't completed
-                JobReport runningJob = await _dbContext.JobReports.FirstOrDefaultAsync(x => x.ExitCode == null && x.JobId == jobId);
-                if (runningJob != null && runningJob.Pid.HasValue)
+                foreach (var job in runningJobs)
                 {
-                    Process.GetProcessById(runningJob.Pid.Value).Kill();
-                    return true;
+                    try
+                    {
+                        if (job.Pid.HasValue)
+                            Process.GetProcessById(job.Pid.Value).Kill();
+                    }
+                    catch { }
                 }
+                return true;
             }
-            catch { }
 
             return false;
         }
@@ -92,7 +96,7 @@ namespace JobScheduler.Controllers
         /// </summary>
         /// <param name="jobPid">Job Pid/param>
         /// <returns></returns>
-        public async Task<bool> KillRunningJobByPid(int jobPid)
+        public bool KillRunningJobByPid(int jobPid)
         {
             try
             {
@@ -111,7 +115,7 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if successful</returns>
         public async Task<bool> DeleteJobAsync(int id)
         {
-            _dbContext.Jobs.Remove(_dbContext.Jobs.FirstOrDefault(x => x.Id == id));
+            _dbContext.Jobs.Remove(await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id));
             var res = await _dbContext.SaveChangesAsync();
 
             return res > 0;

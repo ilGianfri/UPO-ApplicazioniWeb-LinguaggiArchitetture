@@ -1,6 +1,7 @@
 ﻿using JobScheduler.Data;
 using JobScheduler.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,10 +10,10 @@ namespace JobScheduler.Controllers
 {
     public class SchedulesMethods
     {
-        private readonly ApplicationDbContext _dbContext;
-        public SchedulesMethods(ApplicationDbContext dbContext)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        public SchedulesMethods(IServiceScopeFactory serviceScopeFactory)
         {
-            _dbContext = dbContext;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -21,7 +22,10 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Schedule objects</returns>
         public async Task<IEnumerable<Schedule>> GetSchedulesAsync()
         {
-            return await _dbContext.Schedules.Include(Schedule => Schedule.Job).ToListAsync();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await db.Schedules.Include(Schedule => Schedule.Job).ToListAsync();
         }
 
         /// <summary>
@@ -31,7 +35,10 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a Schedule object</returns>
         public async Task<Schedule> GetScheduleByIdAsync(int id)
         {
-            return await _dbContext.Schedules.FirstOrDefaultAsync(x => x.Id == id);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await db.Schedules.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>
@@ -41,11 +48,16 @@ namespace JobScheduler.Controllers
         /// <returns>Returns the newly created Schedule object otherwise null</returns>
         public async Task<Schedule> CreateScheduleAsync(Schedule newSchedule)
         {
-            _dbContext.Schedules.Add(newSchedule);
-            var res = await _dbContext.SaveChangesAsync();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            db.Schedules.Add(newSchedule);
+            var res = await db.SaveChangesAsync();
 
             if (res > 0)
                 return newSchedule;
+
+
 
             return null;
         }
@@ -59,11 +71,14 @@ namespace JobScheduler.Controllers
         /// <returns></returns>
         public async Task<Schedule> EditScheduleAsync(int id, Schedule editedSchedule)
         {
-            Schedule schedule = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            Schedule schedule = db.Schedules.FirstOrDefault(x => x.Id == id);
             if (schedule != null)
             {
                 schedule = editedSchedule;
-                await _dbContext.SaveChangesAsync();
+                await db.SaveChangesAsync();
 
                 return schedule;
             }
@@ -78,12 +93,15 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a boolean with the operation result</returns>
         public async Task<bool?> DeleteScheduleAsync(int id)
         {
-            Schedule schedule = _dbContext.Schedules.FirstOrDefault(x => x.Id == id);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            Schedule schedule = db.Schedules.FirstOrDefault(x => x.Id == id);
             if (schedule == null)
                 return null;
 
-            _dbContext.Schedules.Remove(schedule);
-            var res = await _dbContext.SaveChangesAsync();
+            db.Schedules.Remove(schedule);
+            var res = await db.SaveChangesAsync();
 
             return res > 0;
         }

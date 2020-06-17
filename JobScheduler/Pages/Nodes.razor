@@ -28,7 +28,7 @@
                     <td>
                         @if (node.GroupNodes != null)
                         {
-                            <span>@string.Join(",", node.GroupNodes.Select(x => x.Group.Name))</span>
+                            <span>@string.Join(",", node.GroupNodes.Where(y => y.Group != null).Select(x => x.Group.Name))</span>
                         }
                 </td>
                 <td>@node.Role</td>
