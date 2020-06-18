@@ -57,13 +57,18 @@ namespace JobScheduler.Data
                     throw new InvalidOperationException("Cannot add role Admin to default user");
             }
 
-            if (_dbContext.Nodes.FirstOrDefault(x => x.IPStr == GetIPAddress()) == null)
+            if (_dbContext.Nodes.FirstOrDefault(x => x.IPStr == "https://localhost/") == null)
             {
-                _dbContext.Nodes.Add(new Node() { IPStr = GetIPAddress(), Name = "Master", Role = NodeRole.Master });
+                _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Master", Role = NodeRole.Master, Port = 44383 });
+                _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Slave 1 ", Role = NodeRole.Slave, Port = 44327 });
                 await _dbContext.SaveChangesAsync();
             }
         }
 
+        /// <summary>
+        /// Helper method that returns the default IP address
+        /// </summary>
+        /// <returns></returns>
         private string GetIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());

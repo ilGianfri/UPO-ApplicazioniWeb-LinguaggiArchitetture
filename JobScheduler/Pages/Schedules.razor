@@ -1,6 +1,7 @@
 ﻿@page "/schedules"
 @inject SchedulesMethods schedulesMethods
 @inject JobsMethods jobMethods
+@inject JobScheduler.BackgroundWorker.JobRunner jobRunner
 
 <AuthorizeView Roles="Admin, Editor">
     <h3>Schedules</h3>
@@ -23,22 +24,22 @@
                     <td>
                         @if (!string.IsNullOrEmpty(schedule.Cron))
                         {<span>@ExpressionDescriptor.GetDescription(schedule.Cron);</span>}
-                </td>
-                <td>@schedule.Job.Path</td>
-                <td>
-                    <button class="btn btn-primary"
-                            @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
-                        Edit
-                    </button>
-                </td>
-                <td>
-                    <button class="btn btn-primary"
-                            @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
-                        Run Now
-                    </button>
-                </td>
-            </tr>
-        }
+                    </td>
+                    <td>@schedule.Job.Path</td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => { IsEditSchedule = true; EditSchedule(schedule); })">
+                            Edit
+                        </button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary"
+                                @onclick="(() => RunSchedule(schedule))">
+                            Run Now
+                        </button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 
@@ -179,6 +180,11 @@
     {
         await schedulesMethods.DeleteScheduleAsync(CurrentSchedule.Id);
         ClosePopup();
+    }
+
+    private async void RunSchedule(Schedule schedule)
+    {
+        await jobRunner.ExecuteAsync(schedule.Job);
     }
 
     private void EditSchedule(Schedule schedule)
