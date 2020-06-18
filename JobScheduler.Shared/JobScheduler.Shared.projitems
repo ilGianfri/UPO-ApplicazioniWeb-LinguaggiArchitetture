@@ -9,13 +9,13 @@
     <Import_RootNamespace>JobScheduler.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\JobReport.cs" />
-    <Compile Include="..\JobScheduler.Shared\Models\GroupNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Group.cs" />
-    <Compile Include="..\JobScheduler.Shared\Models\Job.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\GroupNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Job.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\JobReport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\JwtToken.cs" />
-    <Compile Include="..\JobScheduler.Shared\Models\Node.cs" />
-    <Compile Include="..\JobScheduler.Shared\Models\Schedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Node.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Schedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWithRole.cs" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
 {
-    public class Group
+    public partial class Group
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("Id")]
@@ -17,5 +16,7 @@ namespace JobScheduler.Shared.Models
         public bool IsChecked { get; set; }
         [JsonIgnore]
         public virtual ICollection<GroupNode> GroupNodes { get; set; } = new HashSet<GroupNode>();
+        [JsonIgnore]
+        public virtual ICollection<Job> Jobs { get; set; } = new HashSet<Job>();
     }
 }

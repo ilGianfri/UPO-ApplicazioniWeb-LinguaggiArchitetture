@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace JobScheduler.Shared.Models
@@ -17,8 +18,8 @@ namespace JobScheduler.Shared.Models
         [JsonPropertyName("Output")]
         public string Output { get; set; }
         [JsonPropertyName("StartTime")]
-        public string StartTime { get; set; }
+        public DateTime StartTime { get; set; }
         [JsonPropertyName("ExitTime")]
-        public string ExitTime { get; set; }
+        public DateTime ExitTime { get; set; }
     }
 }

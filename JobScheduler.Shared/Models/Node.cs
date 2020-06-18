@@ -17,17 +17,12 @@ namespace JobScheduler.Shared.Models
         public int Port { get; set; }
         [JsonPropertyName("Role")]
         public NodeRole Role { get; set; }
-        [JsonPropertyName("JobId")]
-        public int? JobId { get; set; }
         [NotMapped]
         [JsonIgnore]
         public bool IsChecked { get; set; }
-        [JsonPropertyName("Job")]
-        public virtual Job Job { get; set; }
         [JsonIgnore]
         public virtual ICollection<GroupNode> GroupNodes { get; set; } = new HashSet<GroupNode>();
     }
-
     public enum NodeRole
     {
         Master,

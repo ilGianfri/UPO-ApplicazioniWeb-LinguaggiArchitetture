@@ -32,7 +32,11 @@ namespace JobScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+                {
+                    //options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+                    options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                    options.EnableSensitiveDataLogging(true);
+                });
 
             services.AddDefaultIdentity<IdentityUser>(options => options.User.RequireUniqueEmail = true)
                 .AddRoles<IdentityRole>()
@@ -41,7 +45,7 @@ namespace JobScheduler
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.TryAddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            
+
             //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             //services.AddHttpContextAccessor();

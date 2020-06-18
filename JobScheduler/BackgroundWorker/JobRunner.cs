@@ -62,7 +62,7 @@ namespace JobScheduler.BackgroundWorker
             Process p = (Process)sender;
             var output = p.StandardOutput.ReadToEnd();
             //Save result & sets job as exited
-            await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, StartTime = p.StartTime.ToString(), ExitTime = p.ExitTime.ToString() });
+            await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, StartTime = p.StartTime, ExitTime = p.ExitTime });
             _jobReportMethods.SetJobStatus(JobId, JobStatus.Exited);
         }
     }

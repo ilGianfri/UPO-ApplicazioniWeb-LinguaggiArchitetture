@@ -165,7 +165,7 @@
                 return;
             }
 
-            var schedule = new Schedule { Job = AvailableJobs.FirstOrDefault(x => x.Id == SelectedId), Cron = CurrentSchedule.Cron };
+            var schedule = new Schedule { JobId = SelectedId, Cron = CurrentSchedule.Cron };
             var response = await schedulesMethods.CreateScheduleAsync(schedule);
             if (response != null)
             {

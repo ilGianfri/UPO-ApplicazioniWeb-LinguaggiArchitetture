@@ -62,9 +62,9 @@ namespace JobScheduler.Controllers.API
             if (node == null)
                 return BadRequest();
 
-            bool created = await _nodesMethods.CreateNodeAsync(node);
+            Node created = await _nodesMethods.CreateNodeAsync(node);
 
-            return created ? StatusCode(201) : StatusCode(400);
+            return created != null ? StatusCode(201) : StatusCode(400);
         }
 
         // PUT api/<NodesController>/5

@@ -133,7 +133,7 @@
     {
         if (IsEditNode)
         {
-            CurrentNode.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id, Group = y, Node = CurrentNode }).ToList();
+            CurrentNode.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id/*, Group = y, Node = CurrentNode*/ }).ToList();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
             {
@@ -144,11 +144,15 @@
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
-            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id, Group = y, Node = CurrentNode }).ToList() };
+            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role };
 
             var response = await nodesMethods.CreateNodeAsync(node);
-            if (response)
+            if (response != null)
+            {
+                response.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { /*Group = y,*/ GroupId = y.Id/*, Node = response*/, NodeId = response.Id }).ToList();
+                await nodesMethods.EditNodeAsync(response.Id, response);
                 ClosePopup();
+            }
             else ErrorMessage = "Error: Could not create this node.";
         }
     }
@@ -191,8 +195,7 @@
         CurrentNodeRole = node.Role == 0 ? "Master" : "Slave";
         ShowPopup = true;
 
-        //TODO
-        //if (node.GroupNodes != null)
-        //    ExistingGroups.Where(n => node.Group.Any(n1 => n1.Id == n.Id)).ToList().ForEach(x => x.IsChecked = true);
+        if (node.GroupNodes != null)
+            ExistingGroups.Where(n => node.GroupNodes.Any(n1 => n1.GroupId == n.Id)).ToList().ForEach(x => x.IsChecked = true);
     }
 }

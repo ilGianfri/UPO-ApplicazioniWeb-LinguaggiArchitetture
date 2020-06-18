@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -16,12 +15,12 @@ namespace JobScheduler.Shared.Models
         public string Parameters { get; set; }
         [JsonPropertyName("Status")]
         public JobStatus Status { get; set; }
+        [JsonPropertyName("GroupId")]
+        public int? GroupId { get; set; }
         [JsonPropertyName("Group")]
         public virtual Group Group { get; set; }
-        [JsonPropertyName("Schedules")]
+        [JsonIgnore]
         public virtual ICollection<Schedule> Schedules { get; set; } = new HashSet<Schedule>();
-        [JsonPropertyName("Nodes")]
-        public virtual ICollection<Node> Nodes { get; set; } = new HashSet<Node>();
     }
 
     public enum JobStatus
