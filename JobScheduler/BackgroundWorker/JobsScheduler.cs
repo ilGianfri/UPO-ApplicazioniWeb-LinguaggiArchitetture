@@ -5,7 +5,6 @@ using NCrontab.Advanced;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -18,8 +17,8 @@ namespace JobScheduler.BackgroundWorker
     {
         //Jobs list ordered by time
         public SortedList<DateTime, Schedule> Jobs = new SortedList<DateTime, Schedule>();
-
-        private Timer WakeUpTimer, UpdateJobsTimer;
+        private Timer WakeUpTimer;
+        private readonly Timer UpdateJobsTimer;
         private readonly ILogger<JobsScheduler> _logger;
         private readonly SchedulesMethods _schedulesMethods;
         private readonly JobRunner _jobRunner;
@@ -51,7 +50,7 @@ namespace JobScheduler.BackgroundWorker
             Jobs.Clear();
 
             foreach (Schedule schedule in await _schedulesMethods.GetSchedulesAsync())
-                if (schedule.Job != null) 
+                if (schedule.Job != null)
                     AddJob(schedule);
 
             UpdateWakeUpTimer();

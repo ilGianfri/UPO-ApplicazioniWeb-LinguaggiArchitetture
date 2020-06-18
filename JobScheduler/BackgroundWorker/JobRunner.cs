@@ -9,7 +9,6 @@ namespace JobScheduler.BackgroundWorker
     public class JobRunner
     {
         private readonly JobReportMethods _jobReportMethods;
-        //private readonly ApplicationDbContext _dbContext;
 
         private int JobId;
         private int? ReportId;
@@ -31,11 +30,8 @@ namespace JobScheduler.BackgroundWorker
                         jobProcess.StartInfo.FileName = job.Path;
                         if (string.IsNullOrEmpty(job.Parameters))
                             jobProcess.StartInfo.Arguments = job.Parameters;
-                        //jobProcess.StartInfo.UseShellExecute = false;
+                        jobProcess.StartInfo.UseShellExecute = false;
                         jobProcess.StartInfo.RedirectStandardOutput = true;
-
-                        //If cancellation is requested, kills the process
-                        //cancellationToken.Register(() => jobProcess.Kill());
 
                         jobProcess.Exited += JobProcessExited;
                         var started = jobProcess.Start();
@@ -45,7 +41,7 @@ namespace JobScheduler.BackgroundWorker
                             //Save initial details & sets job as running
                             JobId = job.Id;
                             ReportId = await _jobReportMethods.CreateJobReportAsync(new JobReport() { JobId = JobId, Pid = jobProcess.Id });
-                             _jobReportMethods.SetJobStatus(JobId, JobStatus.Running);
+                            _jobReportMethods.SetJobStatus(JobId, JobStatus.Running);
                         }
                     }
                     catch (Exception ex)
@@ -59,7 +55,6 @@ namespace JobScheduler.BackgroundWorker
         private async void JobProcessExited(object sender, EventArgs e)
         {
             Process p = (Process)sender;
-            var output = p.StandardOutput.ReadToEnd();
             //Save result & sets job as exited
             await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, StartTime = p.StartTime, ExitTime = p.ExitTime });
             _jobReportMethods.SetJobStatus(JobId, JobStatus.Exited);

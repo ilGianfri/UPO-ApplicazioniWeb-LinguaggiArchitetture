@@ -14,7 +14,7 @@ namespace JobScheduler.Slave.Middleware
         private readonly ILogger<MasterSafeListMiddleware> _logger;
         private readonly string _safelist;
 
-        public MasterSafeListMiddleware(RequestDelegate next,ILogger<MasterSafeListMiddleware> logger, string safelist)
+        public MasterSafeListMiddleware(RequestDelegate next, ILogger<MasterSafeListMiddleware> logger, string safelist)
         {
             _safelist = safelist;
             _next = next;

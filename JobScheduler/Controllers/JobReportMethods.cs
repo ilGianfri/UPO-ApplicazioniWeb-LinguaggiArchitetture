@@ -10,7 +10,7 @@ namespace JobScheduler.Controllers
     public class JobReportMethods
     {
         //private readonly ApplicationDbContext _dbContext;
-        private IServiceScopeFactory _serviceScopeFactory;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public JobReportMethods(IServiceScopeFactory serviceScopeFactory)
         {

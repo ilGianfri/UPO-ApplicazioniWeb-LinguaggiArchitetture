@@ -43,7 +43,7 @@ namespace JobScheduler.Controllers.API
             try
             {
                 int? reportId = await _jobReports.CreateJobReportAsync(value);
-                
+
                 return Ok(reportId);
             }
             catch (Exception ex)

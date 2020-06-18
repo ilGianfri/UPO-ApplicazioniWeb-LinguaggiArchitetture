@@ -1,6 +1,4 @@
-using JobScheduler.Slave.BackgroundWorker;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace JobScheduler.Slave
@@ -18,9 +16,9 @@ namespace JobScheduler.Slave
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-            //.ConfigureServices(services =>
-            //{
-            //    services.AddHostedService<JobRunner>();
-            //});
+        //.ConfigureServices(services =>
+        //{
+        //    services.AddHostedService<JobRunner>();
+        //});
     }
 }
