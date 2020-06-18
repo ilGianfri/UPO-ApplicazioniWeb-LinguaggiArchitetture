@@ -71,11 +71,15 @@ namespace JobScheduler.Controllers
         {
             using var scope = _serviceScopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
             var report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == id);
 
             if (report != null)
             {
-                report = newReport;
+                report.ExitTime = newReport.ExitTime;
+                report.ExitCode = newReport.ExitCode;
+                report.Output = newReport.Output;
+
                 var res = await db.SaveChangesAsync();
             }
             return report;
@@ -93,7 +97,7 @@ namespace JobScheduler.Controllers
             if (report == null)
                 return null;
 
-            var res = db.JobReports.Add(report);
+            var res = await db.JobReports.AddAsync(report);
 
             await db.SaveChangesAsync();
 

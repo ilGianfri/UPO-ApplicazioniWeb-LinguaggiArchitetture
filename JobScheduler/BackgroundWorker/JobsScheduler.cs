@@ -113,13 +113,20 @@ namespace JobScheduler.BackgroundWorker
         /// <param name="schedule">The schedule to add</param>
         public void AddJob(Schedule schedule)
         {
-            //Fail silently if no cron available
-            if (string.IsNullOrEmpty(schedule.Cron))
-                return;
+            try
+            {
+                //Fail silently if no cron available
+                if (string.IsNullOrEmpty(schedule.Cron))
+                    return;
 
-            schedule.When = CrontabSchedule.Parse(schedule.Cron).GetNextOccurrence(DateTime.Now);
-            Jobs.Add(schedule.When, schedule);
-            _logger.LogInformation($"Added job {schedule.Id} - {schedule.Cron}");
+                schedule.When = CrontabSchedule.Parse(schedule.Cron).GetNextOccurrence(DateTime.Now);
+                Jobs.Add(schedule.When, schedule);
+                _logger.LogInformation($"Added job {schedule.Id} - {schedule.Cron}");
+            }
+            catch
+            {
+                //item with same job error
+            }
         }
 
         /// <summary>

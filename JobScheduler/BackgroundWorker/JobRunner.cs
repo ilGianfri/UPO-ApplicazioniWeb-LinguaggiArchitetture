@@ -40,7 +40,7 @@ namespace JobScheduler.BackgroundWorker
                         {
                             //Save initial details & sets job as running
                             JobId = job.Id;
-                            ReportId = await _jobReportMethods.CreateJobReportAsync(new JobReport() { JobId = JobId, Pid = jobProcess.Id });
+                            ReportId = await _jobReportMethods.CreateJobReportAsync(new JobReport() { JobId = JobId, Pid = jobProcess.Id, StartTime = jobProcess.StartTime });
                             _jobReportMethods.SetJobStatus(JobId, JobStatus.Running);
                         }
                     }
@@ -56,7 +56,7 @@ namespace JobScheduler.BackgroundWorker
         {
             Process p = (Process)sender;
             //Save result & sets job as exited
-            await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, StartTime = p.StartTime, ExitTime = p.ExitTime });
+            await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime });
             _jobReportMethods.SetJobStatus(JobId, JobStatus.Exited);
         }
     }
