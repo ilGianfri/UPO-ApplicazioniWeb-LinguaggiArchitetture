@@ -24,7 +24,7 @@ namespace JobScheduler.Controllers
             using var scope = _serviceScopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            return await db.Groups.Include(x => x.GroupNodes).ToListAsync();
+            return await db.Groups.Include(x => x.GroupNodes).ThenInclude(y => y.Node).ToListAsync();
         }
 
         /// <summary>

@@ -1,10 +1,14 @@
 ﻿using JobScheduler.Controllers;
+using JobScheduler.Pages;
 using JobScheduler.Shared.Models;
 using Microsoft.Extensions.Logging;
 using NCrontab.Advanced;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -23,13 +27,15 @@ namespace JobScheduler.BackgroundWorker
         private readonly SchedulesMethods _schedulesMethods;
         private readonly JobRunner _jobRunner;
         private readonly GroupsMethods _groupsMethods;
+        private readonly NodesMethods _nodesMethods;
 
-        public JobsScheduler(SchedulesMethods schedulesMethods, ILogger<JobsScheduler> logger, JobRunner jobRunner, GroupsMethods groupsMethods)
+        public JobsScheduler(SchedulesMethods schedulesMethods, ILogger<JobsScheduler> logger, JobRunner jobRunner, GroupsMethods groupsMethods, NodesMethods nodesMethods)
         {
             _schedulesMethods = schedulesMethods;
             _logger = logger;
             _jobRunner = jobRunner;
             _groupsMethods = groupsMethods;
+            _nodesMethods = nodesMethods;
 
             PopulateJobsQueue();
 
@@ -84,14 +90,51 @@ namespace JobScheduler.BackgroundWorker
         {
             WakeUpTimer.Stop();
 
-            //Run job
-            var groups = await _groupsMethods.GetGroupsAsync();
-            //var res = groups.SelectMany(x => x.GroupNodes.Where(y => y.GroupId == Jobs.FirstOrDefault().Value.Job.Group.Id));
-            //TODO: Decide where to launch the job
-            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+            Job job = Jobs.Values.FirstOrDefault().Job;
+
+            //Get available groups
+            IEnumerable<Group> groups = await _groupsMethods.GetGroupsAsync();
+            //Group id
+            int? groupId = job.GroupId;
+
+            if (groupId == null)
+            {
+                //Run job locally
+                await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+
+                foreach (var node in await _nodesMethods.GetNodesAsync())
+                    RunJobOnNodes(node, job);
+            }
+            else
+            {
+                IEnumerable<Node> nodes = groups.FirstOrDefault(x => x.Id == groupId).GroupNodes.Select(x => x.Node);
+                foreach (var node in nodes)
+                {
+                    if (node.Role == NodeRole.Master)
+                    {
+                        //Run job locally
+                        await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+                    }
+                    else
+                    {
+                        RunJobOnNodes(node, job);
+                    }
+                }
+            }
 
             RemoveExecutedJob();
             UpdateWakeUpTimer();
+        }
+
+        private async void RunJobOnNodes(Node node, Job job)
+        {
+            try
+            {
+                using HttpClient client = new HttpClient();
+                StringContent content = new StringContent(JsonSerializer.Serialize(job), Encoding.UTF8, "application/json");
+                await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
+            }
+            catch { }
         }
 
         /// <summary>
@@ -141,17 +184,5 @@ namespace JobScheduler.BackgroundWorker
             WakeUp(null, null);
             _logger.LogInformation($"Added job {schedule.Id}");
         }
-
-        //TODO
-
-        //public void RemoveJob()
-        //{
-
-        //}
-
-        //public void EditJob()
-        //{
-
-        //}
     }
 }

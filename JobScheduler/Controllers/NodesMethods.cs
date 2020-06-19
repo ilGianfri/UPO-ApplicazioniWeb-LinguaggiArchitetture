@@ -1,6 +1,7 @@
 ﻿using JobScheduler.Data;
 using JobScheduler.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,10 +10,10 @@ namespace JobScheduler.Controllers
 {
     public class NodesMethods
     {
-        private readonly ApplicationDbContext _dbContext;
-        public NodesMethods(ApplicationDbContext dbContext)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        public NodesMethods(IServiceScopeFactory serviceScopeFactory)
         {
-            _dbContext = dbContext;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -21,7 +22,10 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Node objects</returns>
         public async Task<IEnumerable<Node>> GetNodesAsync()
         {
-            return await _dbContext.Nodes.Include(x => x.GroupNodes).ThenInclude(g => g.Group).ToListAsync();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await db.Nodes.Include(x => x.GroupNodes).ThenInclude(g => g.Group).ToListAsync();
         }
 
         /// <summary>
@@ -31,7 +35,10 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a Node object</returns>
         public async Task<Node> GetNodeByIdAsync(int id)
         {
-            return await _dbContext.Nodes.FirstOrDefaultAsync(x => x.Id == id);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            return await db.Nodes.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>
@@ -41,8 +48,11 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if created successfully</returns>
         public async Task<Node> CreateNodeAsync(Node newNode)
         {
-            var node = _dbContext.Nodes.Add(newNode);
-            var changes = await _dbContext.SaveChangesAsync();
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            var node = db.Nodes.Add(newNode);
+            var changes = await db.SaveChangesAsync();
 
             return changes > 0 ? node.Entity : null;
         }
@@ -55,12 +65,15 @@ namespace JobScheduler.Controllers
         /// <returns>The modified Node object if successful otherwise null</returns>
         public async Task<Node> EditNodeAsync(int id, Node editedNode)
         {
-            Node node = _dbContext.Nodes.FirstOrDefault(x => x.Id == id);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+            Node node = db.Nodes.FirstOrDefault(x => x.Id == id);
             if (node != null)
             {
                 node = editedNode;
 
-                await _dbContext.SaveChangesAsync();
+                await db.SaveChangesAsync();
             }
 
             return node;
@@ -72,17 +85,20 @@ namespace JobScheduler.Controllers
         /// <param name="id">The Node id</param>
         public async Task DeleteNodeAsync(int id)
         {
+            using var scope = _serviceScopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
             //Removes the relations first
-            var nodes = _dbContext.GroupNodes.Where(x => x.NodeId == id);
+            var nodes = db.GroupNodes.Where(x => x.NodeId == id);
 
             foreach (var n in nodes)
-                _dbContext.GroupNodes.Remove(n);
+                db.GroupNodes.Remove(n);
 
-            await _dbContext.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             //Deletes the node
-            _dbContext.Nodes.Remove(_dbContext.Nodes.FirstOrDefault(x => x.Id == id));
-            await _dbContext.SaveChangesAsync();
+            db.Nodes.Remove(db.Nodes.FirstOrDefault(x => x.Id == id));
+            await db.SaveChangesAsync();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                         jobProcess.StartInfo.FileName = job.Path;
                         if (string.IsNullOrEmpty(job.Parameters))
                             jobProcess.StartInfo.Arguments = job.Parameters;
-                        //jobProcess.StartInfo.UseShellExecute = false;
+                        jobProcess.StartInfo.UseShellExecute = false;
                         jobProcess.StartInfo.RedirectStandardOutput = true;
 
                         jobProcess.Exited += JobProcessExited;
