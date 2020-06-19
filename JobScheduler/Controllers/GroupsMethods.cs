@@ -21,8 +21,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumberable of Group objects</returns>
         public async Task<IEnumerable<Group>> GetGroupsAsync()
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Groups.Include(x => x.GroupNodes).ThenInclude(y => y.Node).ToListAsync();
         }
@@ -34,8 +34,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a Group object</returns>
         public async Task<Group> GetGroupByIdAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Groups.FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -47,11 +47,11 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if deleted successfully otherwise false</returns>
         public async Task<bool> DeleteGroupAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             db.Groups.Remove(await db.Groups.FirstOrDefaultAsync(x => x.Id == id));
-            var res = await db.SaveChangesAsync();
+            int res = await db.SaveChangesAsync();
 
             return res > 0;
         }
@@ -63,8 +63,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if created successfully otherwise false</returns>
         public async Task<bool> CreateGroupAsync(Group newGroup)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             db.Groups.Add(newGroup);
             int res = await db.SaveChangesAsync();
@@ -80,15 +80,15 @@ namespace JobScheduler.Controllers
         /// <returns>Returns the modified group. If the group with the given id does not exist, returns null</returns>
         public async Task<Group> EditGroupAsync(int id, Group editedGroup)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var group = await db.Groups.FirstOrDefaultAsync(x => x.Id == id);
+            Group group = await db.Groups.FirstOrDefaultAsync(x => x.Id == id);
 
             if (group != null)
             {
                 group = editedGroup;
-                var res = await db.SaveChangesAsync();
+                int res = await db.SaveChangesAsync();
             }
             return group;
         }

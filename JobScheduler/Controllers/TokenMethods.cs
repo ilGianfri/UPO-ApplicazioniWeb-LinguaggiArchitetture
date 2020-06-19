@@ -31,14 +31,14 @@ namespace JobScheduler.Controllers
         /// <returns>A JwtToken object containing the user token</returns>
         public async Task<JwtToken?> CreateToken(InputModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            IdentityUser? user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
             {
                 if (await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var key = Encoding.ASCII.GetBytes(_configuration["Tokens:Key"]);
-                    var tokenDescriptor = new SecurityTokenDescriptor
+                    JwtSecurityTokenHandler? tokenHandler = new JwtSecurityTokenHandler();
+                    byte[]? key = Encoding.ASCII.GetBytes(_configuration["Tokens:Key"]);
+                    SecurityTokenDescriptor? tokenDescriptor = new SecurityTokenDescriptor
                     {
                         Subject = new ClaimsIdentity(new Claim[]
                         {
@@ -48,12 +48,12 @@ namespace JobScheduler.Controllers
                         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                     };
 
-                    foreach (var role in await _userManager.GetRolesAsync(user))
+                    foreach (string? role in await _userManager.GetRolesAsync(user))
                     {
                         tokenDescriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, role));
                     }
 
-                    var token = tokenHandler.CreateToken(tokenDescriptor);
+                    SecurityToken? token = tokenHandler.CreateToken(tokenDescriptor);
 
                     return new JwtToken
                     {

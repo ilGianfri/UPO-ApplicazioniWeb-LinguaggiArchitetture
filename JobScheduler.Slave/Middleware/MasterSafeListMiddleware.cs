@@ -25,16 +25,16 @@ namespace JobScheduler.Slave.Middleware
         {
             if (context.Request.Method != HttpMethod.Get.Method)
             {
-                var remoteIp = context.Connection.RemoteIpAddress;
+                IPAddress remoteIp = context.Connection.RemoteIpAddress;
                 _logger.LogDebug("Request from Remote IP address: {RemoteIp}", remoteIp);
 
                 string[] ip = _safelist.Split(';');
 
-                var bytes = remoteIp.GetAddressBytes();
-                var badIp = true;
-                foreach (var address in ip)
+                byte[] bytes = remoteIp.GetAddressBytes();
+                bool badIp = true;
+                foreach (string address in ip)
                 {
-                    var testIp = IPAddress.Parse(address);
+                    IPAddress testIp = IPAddress.Parse(address);
                     if (testIp.GetAddressBytes().SequenceEqual(bytes))
                     {
                         badIp = false;

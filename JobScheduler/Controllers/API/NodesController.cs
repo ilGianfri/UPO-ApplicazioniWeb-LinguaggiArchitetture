@@ -29,7 +29,7 @@ namespace JobScheduler.Controllers.API
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Node>>> Get()
         {
-            var nodes = await _nodesMethods.GetNodesAsync();
+            IEnumerable<Node> nodes = await _nodesMethods.GetNodesAsync();
             return nodes == null ? new EmptyResult() : (ActionResult<IEnumerable<Node>>)Ok(nodes);
         }
 

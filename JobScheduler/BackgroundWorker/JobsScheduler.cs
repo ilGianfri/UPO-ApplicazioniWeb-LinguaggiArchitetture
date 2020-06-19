@@ -1,5 +1,4 @@
 ﻿using JobScheduler.Controllers;
-using JobScheduler.Pages;
 using JobScheduler.Shared.Models;
 using Microsoft.Extensions.Logging;
 using NCrontab.Advanced;
@@ -77,7 +76,7 @@ namespace JobScheduler.BackgroundWorker
                 return;
 
             DateTime nextjob = Jobs.FirstOrDefault().Key;
-            var time = (nextjob - DateTime.Now).TotalMilliseconds;
+            double time = (nextjob - DateTime.Now).TotalMilliseconds;
             if (time < 0) time = 0;
             WakeUpTimer.Interval = time;
             WakeUpTimer.Start();
@@ -90,38 +89,39 @@ namespace JobScheduler.BackgroundWorker
         {
             WakeUpTimer.Stop();
 
-            Job job = Jobs.Values.FirstOrDefault().Job;
-
-            //Get available groups
-            IEnumerable<Group> groups = await _groupsMethods.GetGroupsAsync();
-            //Group id
-            int? groupId = job.GroupId;
-
-            if (groupId == null)
+            Job job = Jobs.Values?.FirstOrDefault()?.Job;
+            if (job != null)
             {
-                //Run job locally
-                await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+                //Get available groups
+                IEnumerable<Group> groups = await _groupsMethods.GetGroupsAsync();
+                //Group id
+                int? groupId = job.GroupId;
 
-                foreach (var node in await _nodesMethods.GetNodesAsync())
-                    RunJobOnNodes(node, job);
-            }
-            else
-            {
-                IEnumerable<Node> nodes = groups.FirstOrDefault(x => x.Id == groupId).GroupNodes.Select(x => x.Node);
-                foreach (var node in nodes)
+                if (groupId == null)
                 {
-                    if (node.Role == NodeRole.Master)
-                    {
-                        //Run job locally
-                        await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
-                    }
-                    else
-                    {
+                    //Run job locally
+                    await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+
+                    foreach (Node node in await _nodesMethods.GetNodesAsync())
                         RunJobOnNodes(node, job);
+                }
+                else
+                {
+                    IEnumerable<Node> nodes = groups.FirstOrDefault(x => x.Id == groupId).GroupNodes.Select(x => x.Node);
+                    foreach (Node node in nodes)
+                    {
+                        if (node.Role == NodeRole.Master)
+                        {
+                            //Run job locally
+                            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+                        }
+                        else
+                        {
+                            RunJobOnNodes(node, job);
+                        }
                     }
                 }
             }
-
             RemoveExecutedJob();
             UpdateWakeUpTimer();
         }
@@ -142,7 +142,7 @@ namespace JobScheduler.BackgroundWorker
         /// </summary>
         private void RemoveExecutedJob()
         {
-            var job = Jobs.FirstOrDefault().Value;
+            Schedule job = Jobs.FirstOrDefault().Value;
             Jobs.Remove(Jobs.FirstOrDefault().Key);
 
             if (job == null)

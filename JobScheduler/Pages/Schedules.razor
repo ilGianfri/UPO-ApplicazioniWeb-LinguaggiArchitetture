@@ -184,7 +184,7 @@
 
     private async void RunSchedule(Schedule schedule)
     {
-        await jobRunner.ExecuteAsync(schedule.Job);
+        await jobRunner.RunJobOnGroup(schedule.Job.GroupId, schedule.Job);
     }
 
     private void EditSchedule(Schedule schedule)

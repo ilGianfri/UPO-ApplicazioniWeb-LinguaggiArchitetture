@@ -22,8 +22,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Node objects</returns>
         public async Task<IEnumerable<Node>> GetNodesAsync()
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Nodes.Include(x => x.GroupNodes).ThenInclude(g => g.Group).ToListAsync();
         }
@@ -35,8 +35,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a Node object</returns>
         public async Task<Node> GetNodeByIdAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Nodes.FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -48,11 +48,11 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if created successfully</returns>
         public async Task<Node> CreateNodeAsync(Node newNode)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var node = db.Nodes.Add(newNode);
-            var changes = await db.SaveChangesAsync();
+            Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Node> node = db.Nodes.Add(newNode);
+            int changes = await db.SaveChangesAsync();
 
             return changes > 0 ? node.Entity : null;
         }
@@ -65,8 +65,8 @@ namespace JobScheduler.Controllers
         /// <returns>The modified Node object if successful otherwise null</returns>
         public async Task<Node> EditNodeAsync(int id, Node editedNode)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             Node node = db.Nodes.FirstOrDefault(x => x.Id == id);
             if (node != null)
@@ -85,13 +85,13 @@ namespace JobScheduler.Controllers
         /// <param name="id">The Node id</param>
         public async Task DeleteNodeAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             //Removes the relations first
-            var nodes = db.GroupNodes.Where(x => x.NodeId == id);
+            IQueryable<GroupNode> nodes = db.GroupNodes.Where(x => x.NodeId == id);
 
-            foreach (var n in nodes)
+            foreach (GroupNode n in nodes)
                 db.GroupNodes.Remove(n);
 
             await db.SaveChangesAsync();

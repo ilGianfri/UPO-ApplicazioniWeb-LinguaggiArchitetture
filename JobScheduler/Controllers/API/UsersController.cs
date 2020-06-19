@@ -29,7 +29,7 @@ namespace JobScheduler.Controllers.API
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithRole>>> Get()
         {
-            var result = await _userMethods.GetUsersAsync();
+            IEnumerable<UserWithRole> result = await _userMethods.GetUsersAsync();
             if (result != null)
                 return Ok(result);
 
@@ -66,7 +66,7 @@ namespace JobScheduler.Controllers.API
             if (newUser == null)
                 return BadRequest();
 
-            var result = await _userMethods.CreateUserAsync(newUser);
+            bool result = await _userMethods.CreateUserAsync(newUser);
             if (result)
                 return StatusCode(201);
 
@@ -86,7 +86,7 @@ namespace JobScheduler.Controllers.API
             if (modifiedUser == null)
                 return BadRequest();
 
-            var edited = await _userMethods.EditUserAsync(id, modifiedUser);
+            UserWithRole edited = await _userMethods.EditUserAsync(id, modifiedUser);
             if (edited != null)
             {
                 return Ok(edited);
@@ -106,7 +106,7 @@ namespace JobScheduler.Controllers.API
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var deleted = await _userMethods.DeleteUserAsync(id);
+            bool? deleted = await _userMethods.DeleteUserAsync(id);
             if (deleted != null)
             {
                 if (deleted.HasValue)

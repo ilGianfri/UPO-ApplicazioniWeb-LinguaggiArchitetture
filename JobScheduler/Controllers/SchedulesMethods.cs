@@ -22,8 +22,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of Schedule objects</returns>
         public async Task<IEnumerable<Schedule>> GetSchedulesAsync()
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Schedules.Include(Schedule => Schedule.Job).ToListAsync();
         }
@@ -35,8 +35,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a Schedule object</returns>
         public async Task<Schedule> GetScheduleByIdAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             return await db.Schedules.FirstOrDefaultAsync(x => x.Id == id);
         }
@@ -48,11 +48,11 @@ namespace JobScheduler.Controllers
         /// <returns>Returns the newly created Schedule object otherwise null</returns>
         public async Task<Schedule> CreateScheduleAsync(Schedule newSchedule)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             db.Schedules.Add(newSchedule);
-            var res = await db.SaveChangesAsync();
+            int res = await db.SaveChangesAsync();
 
             if (res > 0)
                 return newSchedule;
@@ -71,8 +71,8 @@ namespace JobScheduler.Controllers
         /// <returns></returns>
         public async Task<Schedule> EditScheduleAsync(int id, Schedule editedSchedule)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             Schedule schedule = db.Schedules.FirstOrDefault(x => x.Id == id);
             if (schedule != null)
@@ -93,15 +93,15 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a boolean with the operation result</returns>
         public async Task<bool?> DeleteScheduleAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             Schedule schedule = db.Schedules.FirstOrDefault(x => x.Id == id);
             if (schedule == null)
                 return null;
 
             db.Schedules.Remove(schedule);
-            var res = await db.SaveChangesAsync();
+            int res = await db.SaveChangesAsync();
 
             return res > 0;
         }

@@ -16,9 +16,5 @@ namespace JobScheduler.Slave
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-        //.ConfigureServices(services =>
-        //{
-        //    services.AddHostedService<JobRunner>();
-        //});
     }
 }

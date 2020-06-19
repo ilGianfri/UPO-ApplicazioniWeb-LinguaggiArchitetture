@@ -27,7 +27,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                         jobProcess.StartInfo.RedirectStandardOutput = true;
 
                         jobProcess.Exited += JobProcessExited;
-                        var started = jobProcess.Start();
+                        bool started = jobProcess.Start();
                         jobProcess.EnableRaisingEvents = true;
                         if (started)
                         {
@@ -35,7 +35,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                             //TODO: Remove hardcoded values 
                             using HttpClient client = new HttpClient();
                             StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { JobId = job.Id, Pid = jobProcess.Id, StartTime = jobProcess.StartTime }), Encoding.UTF8, "application/json");
-                            var httpResponse = await client.PostAsync("https://localhost:44383/api/JobReports/create", content);
+                            HttpResponseMessage httpResponse = await client.PostAsync("https://localhost:44383/api/JobReports/create", content);
                             if (httpResponse.IsSuccessStatusCode)
                                 ReportId = Convert.ToInt32(httpResponse.Content.ReadAsStringAsync());
                         }
@@ -57,7 +57,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                 //TODO: Remove hardcoded values 
                 using HttpClient client = new HttpClient();
                 StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
-                var httpResponse = await client.PostAsync($"https://localhost:44383/api/JobReports/update/{ReportId}", content);
+                HttpResponseMessage httpResponse = await client.PostAsync($"https://localhost:44383/api/JobReports/update/{ReportId}", content);
             }
             catch
             {

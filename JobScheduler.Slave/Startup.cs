@@ -1,3 +1,4 @@
+using JobScheduler.Slave.BackgroundWorker;
 using JobScheduler.Slave.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,8 @@ namespace JobScheduler.Slave
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Job Scheduler Slave API", Version = "v1", Description = "This is the API exposed by slave nodes" });
             });
+
+            services.AddScoped<JobRunner>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +53,7 @@ namespace JobScheduler.Slave
             app.UseAuthorization();
 
             //Middleware that checks if the IP that is sending the request is allowed (only local addresses or localhost)
-            app.UseMiddleware<MasterSafeListMiddleware>(Configuration["MasterSafeList"]);
+            //app.UseMiddleware<MasterSafeListMiddleware>(Configuration["MasterSafeList"]);
 
             app.UseEndpoints(endpoints =>
             {

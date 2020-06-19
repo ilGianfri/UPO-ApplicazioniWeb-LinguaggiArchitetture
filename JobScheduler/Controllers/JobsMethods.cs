@@ -57,7 +57,7 @@ namespace JobScheduler.Controllers
             {
                 job = editedJob;
 
-                var res = await _dbContext.SaveChangesAsync();
+                int res = await _dbContext.SaveChangesAsync();
                 if (res > 0)
                     return job;
             }
@@ -73,10 +73,10 @@ namespace JobScheduler.Controllers
         public async Task<bool> KillRunningJobById(int jobId)
         {
             //Gets all jobs that haven't completed with given id
-            var runningJobs = await _dbContext.JobReports.Where(x => x.ExitTime == null && x.JobId == jobId).ToListAsync();
+            List<JobReport> runningJobs = await _dbContext.JobReports.Where(x => x.ExitTime == null && x.JobId == jobId).ToListAsync();
             if (runningJobs != null)
             {
-                foreach (var job in runningJobs)
+                foreach (JobReport job in runningJobs)
                 {
                     try
                     {
@@ -116,7 +116,7 @@ namespace JobScheduler.Controllers
         public async Task<bool> DeleteJobAsync(int id)
         {
             _dbContext.Jobs.Remove(await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id));
-            var res = await _dbContext.SaveChangesAsync();
+            int res = await _dbContext.SaveChangesAsync();
 
             return res > 0;
         }

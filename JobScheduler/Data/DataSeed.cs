@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -31,7 +30,7 @@ namespace JobScheduler.Data
             const string email = "admin@jobscheduler.com";
             string password = Configuration.GetValue<string>("DefaultAdminPassword");
 
-            var user = await _userManager.FindByEmailAsync(email);
+            IdentityUser user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 user = new IdentityUser
@@ -72,8 +71,8 @@ namespace JobScheduler.Data
         /// <returns></returns>
         private string GetIPAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {

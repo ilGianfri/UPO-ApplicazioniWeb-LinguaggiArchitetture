@@ -67,7 +67,7 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true if the user has been created successfully</returns>
         public async Task<bool> CreateUserAsync(UserWithRole newUser)
         {
-            var result = await _userManager.CreateAsync(newUser.User, newUser.User.PasswordHash);
+            IdentityResult result = await _userManager.CreateAsync(newUser.User, newUser.User.PasswordHash);
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(newUser.User, newUser.Role);
@@ -85,7 +85,7 @@ namespace JobScheduler.Controllers
         /// <returns>Returns the modified user object if successfull</returns>
         public async Task<UserWithRole> EditUserAsync(string id, UserWithRole modifiedUser)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            IdentityUser user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
                 //Update the email
@@ -98,7 +98,7 @@ namespace JobScheduler.Controllers
                 //The password has been changed
                 if (user.PasswordHash != modifiedUser.User.PasswordHash)
                 {
-                    var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
                     await _userManager.ResetPasswordAsync(user, resetToken, modifiedUser.User.PasswordHash);
                 }
 
@@ -124,10 +124,10 @@ namespace JobScheduler.Controllers
         /// <returns>Returns true is the user has been deleted</returns>
         public async Task<bool?> DeleteUserAsync(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            IdentityUser user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
-                var deleteResult = await _userManager.DeleteAsync(user);
+                IdentityResult deleteResult = await _userManager.DeleteAsync(user);
                 return deleteResult.Succeeded;
             }
             return null;

@@ -29,7 +29,7 @@ namespace JobScheduler.Controllers.API
         {
             if (ModelState.IsValid)
             {
-                var token = await _tokenMethods.CreateToken(model);
+                JwtToken token = await _tokenMethods.CreateToken(model);
                 if (token != null)
                     return token;
             }

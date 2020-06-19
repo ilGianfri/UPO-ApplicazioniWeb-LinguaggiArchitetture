@@ -63,7 +63,7 @@ namespace JobScheduler.Controllers.API
             if (schedule == null)
                 return BadRequest();
 
-            var createdSchedule = await _schedulesMethods.CreateScheduleAsync(schedule);
+            Schedule createdSchedule = await _schedulesMethods.CreateScheduleAsync(schedule);
 
             return Ok(createdSchedule);
         }
@@ -81,7 +81,7 @@ namespace JobScheduler.Controllers.API
             if (modifiedSchedule == null)
                 return BadRequest();
 
-            var res = await _schedulesMethods.EditScheduleAsync(id, modifiedSchedule);
+            Schedule res = await _schedulesMethods.EditScheduleAsync(id, modifiedSchedule);
             if (res == null)
                 return NotFound();
 
@@ -96,7 +96,7 @@ namespace JobScheduler.Controllers.API
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var res = await _schedulesMethods.DeleteScheduleAsync(id);
+            bool? res = await _schedulesMethods.DeleteScheduleAsync(id);
             if (res == null)
                 return NotFound();
 

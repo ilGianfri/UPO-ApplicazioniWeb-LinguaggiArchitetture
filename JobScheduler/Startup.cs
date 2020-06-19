@@ -124,8 +124,8 @@ namespace JobScheduler
                 endpoints.MapFallbackToPage("/_Host");
             });
 
-            using var scope = app.ApplicationServices.CreateScope();
-            var seed = scope.ServiceProvider.GetService<DataSeed>();
+            using IServiceScope scope = app.ApplicationServices.CreateScope();
+            DataSeed seed = scope.ServiceProvider.GetService<DataSeed>();
             await seed.SeedAsync();
 
             //Background worker that runs jobs on the master or sends them to slaves

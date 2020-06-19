@@ -23,8 +23,8 @@ namespace JobScheduler.Controllers
         /// <returns>Returns a IEnumerable of JobReport objects</returns>
         public async Task<IEnumerable<JobReport>> GetJobReportsAsync()
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
             return await db.JobReports.ToListAsync();
         }
 
@@ -35,8 +35,8 @@ namespace JobScheduler.Controllers
         /// <returns></returns>
         public async Task<JobReport> GetJobReportAsync(int id)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
             JobReport report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == id);
 
             return report;
@@ -49,10 +49,10 @@ namespace JobScheduler.Controllers
         /// <param name="jobStatus">New status to set</param>
         public async void SetJobStatus(int jobId, JobStatus jobStatus)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var job = await db.Jobs.FirstOrDefaultAsync(x => x.Id == jobId);
+            Job job = await db.Jobs.FirstOrDefaultAsync(x => x.Id == jobId);
             if (job == null)
                 return;
 
@@ -69,10 +69,10 @@ namespace JobScheduler.Controllers
         /// <returns></returns>
         public async Task<JobReport> EditJobReportAsync(int id, JobReport newReport)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == id);
+            JobReport report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == id);
 
             if (report != null)
             {
@@ -80,7 +80,7 @@ namespace JobScheduler.Controllers
                 report.ExitCode = newReport.ExitCode;
                 report.Output = newReport.Output;
 
-                var res = await db.SaveChangesAsync();
+                int res = await db.SaveChangesAsync();
             }
             return report;
         }
@@ -91,13 +91,13 @@ namespace JobScheduler.Controllers
         /// <returns>The job report id</returns>
         public async Task<int?> CreateJobReportAsync(JobReport report)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
             if (report == null)
                 return null;
 
-            var res = await db.JobReports.AddAsync(report);
+            Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<JobReport> res = await db.JobReports.AddAsync(report);
 
             await db.SaveChangesAsync();
 
@@ -110,10 +110,10 @@ namespace JobScheduler.Controllers
         /// <param name="jobId">The JobReport id to delete</param>
         public async void DeleteJobReportAsync(int jobId)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            ApplicationDbContext db = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == jobId);
+            JobReport report = await db.JobReports.FirstOrDefaultAsync(x => x.Id == jobId);
             if (report == null)
                 return;
 
