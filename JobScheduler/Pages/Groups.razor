@@ -85,10 +85,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        GetGroups();
+        await GetGroups();
     }
 
-    private async void GetGroups()
+    private async Task GetGroups()
     {
         ExistingGroups = (await groupsMethods.GetGroupsAsync()).ToList();
 
@@ -137,7 +137,7 @@
         ShowPopup = true;
     }
 
-    private void ClosePopup()
+    private async void ClosePopup()
     {
         ShowPopup = false;
         IsEditGroup = false;
@@ -146,6 +146,6 @@
 
         StateHasChanged();
 
-        GetGroups();
+        await GetGroups();
     }
 }

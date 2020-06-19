@@ -18,17 +18,16 @@ namespace JobScheduler.Slave.Controllers.API
 
         // GET api/<JobsController>/cancel/5
         /// <summary>
-        /// Returns the status of a Job given its id
+        /// Cancel a job given its pid
         /// </summary>
         /// <param name="id">The Job PID</param>
         /// <returns></returns>
-        [HttpPost("kill/{id}")]
+        [HttpPost("kill/pid/{id}")]
         public ActionResult CancelJob(int id)
         {
             try
             {
                 Process.GetProcessById(id).Kill();
-
             }
             catch
             {

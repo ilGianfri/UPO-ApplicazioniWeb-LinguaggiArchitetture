@@ -133,7 +133,7 @@
     {
         if (IsEditNode)
         {
-            CurrentNode.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id/*, Group = y, Node = CurrentNode*/ }).ToList();
+            CurrentNode.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = CurrentNode.Id }).ToList();
             var response = await nodesMethods.EditNodeAsync(CurrentNode.Id, CurrentNode);
             if (response != null)
             {
@@ -149,7 +149,7 @@
             var response = await nodesMethods.CreateNodeAsync(node);
             if (response != null)
             {
-                response.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { /*Group = y,*/ GroupId = y.Id/*, Node = response*/, NodeId = response.Id }).ToList();
+                response.GroupNodes = ExistingGroups.Where(x => x.IsChecked).Select(y => new GroupNode() { GroupId = y.Id, NodeId = response.Id }).ToList();
                 await nodesMethods.EditNodeAsync(response.Id, response);
                 ClosePopup();
             }
