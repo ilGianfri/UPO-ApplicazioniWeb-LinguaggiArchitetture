@@ -142,14 +142,18 @@ namespace JobScheduler.BackgroundWorker
         /// </summary>
         private void RemoveExecutedJob()
         {
-            Schedule job = Jobs.FirstOrDefault().Value;
-            Jobs.Remove(Jobs.FirstOrDefault().Key);
+            try
+            {
+                Schedule job = Jobs.FirstOrDefault().Value;
+                Jobs.Remove(Jobs.FirstOrDefault().Key);
 
-            if (job == null)
-                return;
+                if (job == null)
+                    return;
 
-            job.When = CrontabSchedule.Parse(job.Cron).GetNextOccurrence(DateTime.Now);
-            Jobs.Add(job.When, job);
+                job.When = CrontabSchedule.Parse(job.Cron).GetNextOccurrence(DateTime.Now);
+                Jobs.TryAdd(job.When, job);
+            }
+            catch { }
         }
 
         /// <summary>

@@ -53,7 +53,7 @@ namespace JobScheduler.Slave
             app.UseAuthorization();
 
             //Middleware that checks if the IP that is sending the request is allowed (only local addresses or localhost)
-            //app.UseMiddleware<MasterSafeListMiddleware>(Configuration["MasterSafeList"]);
+            app.UseMiddleware<MasterSafeListMiddleware>(Configuration["MasterSafeList"]);
 
             app.UseEndpoints(endpoints =>
             {
