@@ -56,7 +56,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                 Process p = (Process)sender;
                 //TODO: Remove hardcoded values 
                 using HttpClient client = new HttpClient();
-                StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
+                StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
                 var httpResponse = await client.PostAsync($"https://127.0.0.1:44383/api/<JobReports>/update/{ReportId}", content);
             }
             catch
