@@ -144,7 +144,7 @@
         else
         {
             CurrentNode.Role = CurrentNodeRole == "Master" ? NodeRole.Master : NodeRole.Slave;
-            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role };
+            var node = new Node { Name = CurrentNode.Name, IPStr = CurrentNode.IPStr, Role = CurrentNode.Role, Port = CurrentNode.Port };
 
             var response = await nodesMethods.CreateNodeAsync(node);
             if (response != null)

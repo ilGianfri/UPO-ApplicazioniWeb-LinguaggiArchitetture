@@ -72,6 +72,15 @@ namespace JobScheduler.Controllers
         /// <param name="id">The Node id</param>
         public async Task DeleteNodeAsync(int id)
         {
+            //Removes the relations first
+            var nodes = _dbContext.GroupNodes.Where(x => x.NodeId == id);
+
+            foreach (var n in nodes)
+                _dbContext.GroupNodes.Remove(n);
+
+            await _dbContext.SaveChangesAsync();
+
+            //Deletes the node
             _dbContext.Nodes.Remove(_dbContext.Nodes.FirstOrDefault(x => x.Id == id));
             await _dbContext.SaveChangesAsync();
         }

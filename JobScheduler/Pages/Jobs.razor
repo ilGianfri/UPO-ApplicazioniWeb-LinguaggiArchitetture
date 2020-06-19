@@ -179,7 +179,8 @@
         IsEditJob = true;
         if (job.Group != null)
         {
-            ExistingGroups.Where(n => job.Group.GroupNodes.Any(n1 => n1.GroupId == n.Id)).ToList().ForEach(x => x.IsChecked = true);
+            if (job.GroupId.HasValue)
+                SelectedGroupId = job.GroupId.Value;
         }
         ShowPopup = true;
     }

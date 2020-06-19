@@ -1,5 +1,6 @@
 ﻿using JobScheduler.Shared.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace JobScheduler.Data
                     throw new InvalidOperationException("Cannot add role Admin to default user");
             }
 
-            if (_dbContext.Nodes.FirstOrDefault(x => x.IPStr == "https://localhost/") == null)
+            if (_dbContext.Nodes != null && await _dbContext.Nodes.CountAsync() == 0)
             {
                 _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Master", Role = NodeRole.Master, Port = 44383 });
                 _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Slave 1 ", Role = NodeRole.Slave, Port = 44327 });

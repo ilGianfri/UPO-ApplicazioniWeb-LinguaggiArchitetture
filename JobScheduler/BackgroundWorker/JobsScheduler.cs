@@ -71,7 +71,9 @@ namespace JobScheduler.BackgroundWorker
                 return;
 
             DateTime nextjob = Jobs.FirstOrDefault().Key;
-            WakeUpTimer.Interval = (nextjob - DateTime.Now).TotalMilliseconds;
+            var time = (nextjob - DateTime.Now).TotalMilliseconds;
+            if (time < 0) time = 0;
+            WakeUpTimer.Interval = time;
             WakeUpTimer.Start();
         }
 
