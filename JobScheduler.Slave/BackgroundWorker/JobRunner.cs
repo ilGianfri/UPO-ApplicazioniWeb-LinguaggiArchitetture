@@ -41,7 +41,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                                 ReportId = Convert.ToInt32(await httpResponse.Content.ReadAsStringAsync());
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         //TODO: Save exception
                     }

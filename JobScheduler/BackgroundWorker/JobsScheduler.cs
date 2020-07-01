@@ -18,8 +18,10 @@ namespace JobScheduler.BackgroundWorker
     /// </summary>
     public class JobsScheduler
     {
+        private static readonly Comparer<DateTime> DescendingComparer = Comparer<DateTime>.Create((x, y) => y.CompareTo(x));
+
         //Jobs list ordered by time
-        public SortedList<DateTime, Schedule> Jobs = new SortedList<DateTime, Schedule>();
+        public SortedList<DateTime, Schedule> Jobs = new SortedList<DateTime, Schedule>(DescendingComparer);
         private Timer WakeUpTimer;
         private readonly Timer UpdateJobsTimer;
         private readonly ILogger<JobsScheduler> _logger;
