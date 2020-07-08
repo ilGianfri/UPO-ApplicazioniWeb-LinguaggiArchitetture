@@ -33,10 +33,9 @@ namespace JobScheduler.Slave.BackgroundWorker
                         if (started)
                         {
                             JobId = job.Id;
-                            //TODO: Remove hardcoded values 
                             using HttpClient client = new HttpClient();
                             StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { JobId = job.Id, Pid = jobProcess.Id, StartTime = jobProcess.StartTime }), Encoding.UTF8, "application/json");
-                            HttpResponseMessage httpResponse = await client.PostAsync("https://localhost:44383/api/JobReports/create", content);
+                            HttpResponseMessage httpResponse = await client.PostAsync($"{Constants.ServerUrl}/api/JobReports/create", content);
                             if (httpResponse.IsSuccessStatusCode)
                                 ReportId = Convert.ToInt32(await httpResponse.Content.ReadAsStringAsync());
                         }
@@ -55,10 +54,9 @@ namespace JobScheduler.Slave.BackgroundWorker
             try
             {
                 Process p = (Process)sender;
-                //TODO: Remove hardcoded values 
                 using HttpClient client = new HttpClient();
                 StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
-                HttpResponseMessage httpResponse = await client.PutAsync($"https://localhost:44383/api/JobReports/update/{ReportId}", content);
+                HttpResponseMessage httpResponse = await client.PutAsync($"{Constants.ServerUrl}/api/JobReports/update/{ReportId}", content);
             }
             catch
             {

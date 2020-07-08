@@ -54,6 +54,9 @@ namespace JobScheduler.BackgroundWorker
         /// </summary>
         private async void PopulateJobsQueue()
         {
+            if (Jobs == null)
+                Jobs = new SortedList<DateTime, Schedule>();
+            
             Jobs.Clear();
 
             foreach (Schedule schedule in await _schedulesMethods.GetSchedulesAsync())
