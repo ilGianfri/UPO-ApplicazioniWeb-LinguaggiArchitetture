@@ -55,7 +55,7 @@ namespace JobScheduler.BackgroundWorker
         {
             if (Jobs == null)
                 Jobs = new ObservableCollection<Schedule>();
-            
+
             Jobs.Clear();
 
             foreach (Schedule schedule in await _schedulesMethods.GetSchedulesAsync())
@@ -90,7 +90,7 @@ namespace JobScheduler.BackgroundWorker
             double time = (nextjob - DateTime.Now).TotalMilliseconds;
             if (time <= 0)
             {
-                WakeUp(null,null);
+                WakeUp(null, null);
             }
             else
             {

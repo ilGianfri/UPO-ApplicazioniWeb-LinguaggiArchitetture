@@ -29,10 +29,7 @@ namespace JobScheduler.Controllers.API
         /// </summary>
         /// <returns>Returns a IEnumerable of Jobs.</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> Get()
-        {
-            return Ok((await _jobMethods.GetJobsAsync()).ToList());
-        }
+        public async Task<ActionResult<IEnumerable<Job>>> Get() => Ok((await _jobMethods.GetJobsAsync()).ToList());
 
         // GET api/<JobsController>/5
         /// <summary>

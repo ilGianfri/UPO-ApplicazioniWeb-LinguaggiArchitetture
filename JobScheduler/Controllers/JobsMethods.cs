@@ -19,19 +19,13 @@ namespace JobScheduler.Controllers
         /// <summary>
         /// Returns all the jobs from the database
         /// </summary>
-        public async Task<IEnumerable<Job>> GetJobsAsync()
-        {
-            return await _dbContext.Jobs.Include(x => x.Group).ToListAsync();
-        }
+        public async Task<IEnumerable<Job>> GetJobsAsync() => await _dbContext.Jobs.Include(x => x.Group).ToListAsync();
 
         /// <summary>
         /// Returns the Job with the specified id
         /// </summary>
         /// <param name="id">The id of the job</param>
-        public async Task<Job> GetJobByIdAsync(int id)
-        {
-            return await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id);
-        }
+        public async Task<Job> GetJobByIdAsync(int id) => await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id);
 
         /// <summary>
         /// Creates a new job

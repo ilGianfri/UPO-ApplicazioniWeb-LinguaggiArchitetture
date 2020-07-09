@@ -56,10 +56,7 @@ namespace JobScheduler.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-        public void OnGetAsync(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-        }
+        public void OnGetAsync(string returnUrl = null) => ReturnUrl = returnUrl;
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {

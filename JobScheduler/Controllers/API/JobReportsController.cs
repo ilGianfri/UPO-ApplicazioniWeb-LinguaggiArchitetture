@@ -21,17 +21,11 @@ namespace JobScheduler.Controllers.API
 
         // GET: api/<JobReportsController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobReport>>> Get()
-        {
-            return Ok(await _jobReports.GetJobReportsAsync());
-        }
+        public async Task<ActionResult<IEnumerable<JobReport>>> Get() => Ok(await _jobReports.GetJobReportsAsync());
 
         // GET api/<JobReportsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobReport>> Get(int id)
-        {
-            return Ok(await _jobReports.GetJobReportAsync(id));
-        }
+        public async Task<ActionResult<JobReport>> Get(int id) => Ok(await _jobReports.GetJobReportAsync(id));
 
         // POST api/<JobReportsController>/create
         [HttpPost("create")]
@@ -60,17 +54,11 @@ namespace JobScheduler.Controllers.API
                 return BadRequest();
 
             JobReport job = await _jobReports.EditJobReportAsync(id, value);
-            if (job != null)
-                return Ok(job);
-
-            return NotFound();
+            return job != null ? Ok(job) : (ActionResult<JobReport>)NotFound();
         }
 
         // DELETE api/<JobReportsController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            _jobReports.DeleteJobReportAsync(id);
-        }
+        public void Delete(int id) => _jobReports.DeleteJobReportAsync(id);
     }
 }
