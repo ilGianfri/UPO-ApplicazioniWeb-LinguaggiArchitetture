@@ -62,7 +62,7 @@
                         }
                         else
                         {
-                            UserName: <input class="form-control" type="text"
+                        UserName: <input class="form-control" type="text"
                                          placeholder="UserName"
                                          @bind="CurrentDetailsUser.User.UserName" />
                         }
@@ -163,11 +163,18 @@
 
         private async Task DeleteUser()
         {
-            ShowPopup = false;
+            //Don't delete the user if there's a single admin
+            if (CurrentDetailsUser.Role == "Admin" && Users.Where(x => x.Role == "Admin").ToList().Count == 1)
+            {
+                ErrorMessage = "Cannot delete the selected account because it's the only admin";
+                return;
+            }
+     
+             ShowPopup = false;
 
-            await userMethods.DeleteUserAsync(CurrentDetailsUser.User.Id);
+             await userMethods.DeleteUserAsync(CurrentDetailsUser.User.Id);
 
-            await GetUsers();
+             await GetUsers();          
         }
 
         private async Task SaveUser()
