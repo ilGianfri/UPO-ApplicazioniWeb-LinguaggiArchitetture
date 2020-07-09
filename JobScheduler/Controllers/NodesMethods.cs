@@ -71,7 +71,20 @@ namespace JobScheduler.Controllers
             Node node = db.Nodes.FirstOrDefault(x => x.Id == id);
             if (node != null)
             {
-                node = editedNode;
+                node.Name = editedNode.Name;
+                node.Port = editedNode.Port;
+                node.IPStr = editedNode.IPStr;
+                node.Role = editedNode.Role;
+
+                //Removes the relations first
+                IQueryable<GroupNode> nodes = db.GroupNodes.Where(x => x.NodeId == id);
+
+                foreach (GroupNode n in nodes)
+                    db.GroupNodes.Remove(n);
+
+                await db.SaveChangesAsync();
+
+                node.GroupNodes = editedNode.GroupNodes;
 
                 await db.SaveChangesAsync();
             }
