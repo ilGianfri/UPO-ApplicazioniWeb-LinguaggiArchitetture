@@ -91,6 +91,7 @@
     private async Task GetGroups()
     {
         ExistingGroups = (await groupsMethods.GetGroupsAsync()).ToList();
+        ExistingGroups.Remove(ExistingGroups.FirstOrDefault(x => x.Id == 0));
 
         StateHasChanged();
     }

@@ -41,7 +41,7 @@ namespace JobScheduler.BackgroundWorker
                     //Get available groups
                     IEnumerable<Group> groups = await _groupsMethods.GetGroupsAsync();
 
-                    if (groupId == null) //Run job on all nodes
+                    if (groupId == null || groupId == 0) //Run job on all nodes
                     {
                         //Run job locally
                         await ExecuteAsync(job);

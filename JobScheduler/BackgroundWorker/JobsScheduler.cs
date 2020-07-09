@@ -114,7 +114,7 @@ namespace JobScheduler.BackgroundWorker
                 //Group id
                 int? groupId = job.GroupId;
 
-                if (groupId == null)
+                if (groupId == null || groupId == 0)
                 {
                     //Run job locally
                     await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault()?.Job);

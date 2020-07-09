@@ -59,6 +59,8 @@ namespace JobScheduler.Data
 
             if (_dbContext.Nodes != null && await _dbContext.Nodes.CountAsync() == 0)
             {
+                _dbContext.Groups.Add(new Group() { Id = 0, Name = null });
+
                 _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Master", Role = NodeRole.Master, Port = 44383 });
                 _dbContext.Nodes.Add(new Node() { IPStr = "https://localhost/", Name = "Slave 1 ", Role = NodeRole.Slave, Port = 44327 });
                 await _dbContext.SaveChangesAsync();
