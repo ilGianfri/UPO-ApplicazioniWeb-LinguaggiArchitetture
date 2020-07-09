@@ -49,7 +49,11 @@ namespace JobScheduler.Controllers
             Job job = await _dbContext.Jobs.FirstOrDefaultAsync(x => x.Id == id);
             if (job != null)
             {
-                job = editedJob;
+                job.GroupId = editedJob.GroupId;
+                job.Parameters = editedJob.Parameters;
+                job.Path = editedJob.Path;
+                job.Status = editedJob.Status;
+                job.Schedules = editedJob.Schedules;
 
                 int res = await _dbContext.SaveChangesAsync();
                 if (res > 0)

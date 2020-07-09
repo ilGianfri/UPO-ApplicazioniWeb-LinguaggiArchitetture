@@ -57,8 +57,6 @@ namespace JobScheduler.Controllers
             if (res > 0)
                 return newSchedule;
 
-
-
             return null;
         }
 
