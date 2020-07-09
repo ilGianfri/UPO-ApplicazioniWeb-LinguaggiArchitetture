@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NCrontab.Advanced;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -21,7 +22,7 @@ namespace JobScheduler.BackgroundWorker
         private static readonly Comparer<DateTime> DescendingComparer = Comparer<DateTime>.Create((x, y) => y.CompareTo(x));
 
         //Jobs list ordered by time
-        public SortedList<DateTime, Schedule> Jobs = new SortedList<DateTime, Schedule>(DescendingComparer);
+        public ObservableCollection<Schedule> Jobs = new ObservableCollection<Schedule>();
         private Timer WakeUpTimer;
         private readonly Timer UpdateJobsTimer;
         private readonly ILogger<JobsScheduler> _logger;
@@ -55,13 +56,20 @@ namespace JobScheduler.BackgroundWorker
         private async void PopulateJobsQueue()
         {
             if (Jobs == null)
-                Jobs = new SortedList<DateTime, Schedule>();
+                Jobs = new ObservableCollection<Schedule>();
             
             Jobs.Clear();
 
             foreach (Schedule schedule in await _schedulesMethods.GetSchedulesAsync())
+            {
                 if (schedule.Job != null)
+                {
+                    schedule.When = CrontabSchedule.Parse(schedule.Cron).GetNextOccurrence(DateTime.Now);
                     AddJob(schedule);
+                }
+            }
+
+            Jobs.OrderBy(x => x.When);
 
             UpdateWakeUpTimer();
         }
@@ -80,11 +88,17 @@ namespace JobScheduler.BackgroundWorker
             if (Jobs.Count == 0)
                 return;
 
-            DateTime nextjob = Jobs.FirstOrDefault().Key;
+            DateTime nextjob = Jobs.FirstOrDefault().When;
             double time = (nextjob - DateTime.Now).TotalMilliseconds;
-            if (time < 0) time = 0;
-            WakeUpTimer.Interval = time;
-            WakeUpTimer.Start();
+            if (time <= 0)
+            {
+                WakeUp(null,null);
+            }
+            else
+            {
+                WakeUpTimer.Interval = time;
+                WakeUpTimer.Start();
+            }
         }
 
         /// <summary>
@@ -94,7 +108,7 @@ namespace JobScheduler.BackgroundWorker
         {
             WakeUpTimer.Stop();
 
-            Job job = Jobs.Values?.FirstOrDefault()?.Job;
+            Job job = Jobs?.FirstOrDefault()?.Job;
             if (job != null)
             {
                 //Get available groups
@@ -105,7 +119,7 @@ namespace JobScheduler.BackgroundWorker
                 if (groupId == null)
                 {
                     //Run job locally
-                    await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+                    await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault()?.Job);
 
                     foreach (Node node in await _nodesMethods.GetNodesAsync())
                         RunJobOnNodes(node, job);
@@ -118,7 +132,7 @@ namespace JobScheduler.BackgroundWorker
                         if (node.Role == NodeRole.Master)
                         {
                             //Run job locally
-                            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault().Value.Job);
+                            await _jobRunner.ExecuteAsync(Jobs.FirstOrDefault()?.Job);
                         }
                         else
                         {
@@ -149,14 +163,14 @@ namespace JobScheduler.BackgroundWorker
         {
             try
             {
-                Schedule job = Jobs.FirstOrDefault().Value;
-                Jobs.Remove(Jobs.FirstOrDefault().Key);
+                Schedule job = Jobs.FirstOrDefault();
+                Jobs.Remove(job);
 
                 if (job == null)
                     return;
 
                 job.When = CrontabSchedule.Parse(job.Cron).GetNextOccurrence(DateTime.Now);
-                Jobs.TryAdd(job.When, job);
+                Jobs.Add(job);
             }
             catch { }
         }
@@ -174,7 +188,7 @@ namespace JobScheduler.BackgroundWorker
                     return;
 
                 schedule.When = CrontabSchedule.Parse(schedule.Cron).GetNextOccurrence(DateTime.Now);
-                Jobs.Add(schedule.When, schedule);
+                Jobs.Add(schedule);
                 _logger.LogInformation($"Added job {schedule.Id} - {schedule.Cron}");
             }
             catch
@@ -189,7 +203,7 @@ namespace JobScheduler.BackgroundWorker
         /// <param name="schedule"></param>
         public void StartJobNow(Schedule schedule)
         {
-            Jobs.Add(DateTime.Now, schedule);
+            Jobs.Add(schedule);
             WakeUp(null, null);
             _logger.LogInformation($"Added job {schedule.Id}");
         }

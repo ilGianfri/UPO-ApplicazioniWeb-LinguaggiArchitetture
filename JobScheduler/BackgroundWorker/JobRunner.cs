@@ -27,7 +27,7 @@ namespace JobScheduler.BackgroundWorker
         }
 
         /// <summary>
-        /// Runs a job on a specific group
+        /// Runs a job on a specific group - used when the user clicks on "run now"
         /// </summary>
         /// <param name="groupId">The id of the group</param>
         /// <param name="job">The job object</param>
@@ -41,7 +41,7 @@ namespace JobScheduler.BackgroundWorker
                     //Get available groups
                     IEnumerable<Group> groups = await _groupsMethods.GetGroupsAsync();
 
-                    if (groupId == null)
+                    if (groupId == null) //Run job on all nodes
                     {
                         //Run job locally
                         await ExecuteAsync(job);
@@ -57,7 +57,7 @@ namespace JobScheduler.BackgroundWorker
                             catch { }
                         }
                     }
-                    else
+                    else //Run job on defined group
                     {
                         IEnumerable<Node> nodes = groups.FirstOrDefault(x => x.Id == groupId).GroupNodes.Select(x => x.Node);
                         foreach (Node node in nodes)
@@ -83,7 +83,11 @@ namespace JobScheduler.BackgroundWorker
             });
         }
 
-
+        /// <summary>
+        /// Runs the given job locally
+        /// </summary>
+        /// <param name="job">The job to run</param>
+        /// <returns></returns>
         public async Task ExecuteAsync(Job job)
         {
             await Task.Run(async () =>
@@ -112,12 +116,15 @@ namespace JobScheduler.BackgroundWorker
                     }
                     catch (Exception ex)
                     {
-                        //TODO: Save exception
+
                     }
                 }
             });
         }
 
+        /// <summary>
+        /// Saves the job reports with all the details of the finished job
+        /// </summary>
         private async void JobProcessExited(object sender, EventArgs e)
         {
             Process p = (Process)sender;

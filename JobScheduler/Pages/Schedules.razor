@@ -23,7 +23,7 @@
                     <td>@schedule.Id</td>
                     <td>
                         @if (!string.IsNullOrEmpty(schedule.Cron))
-                        {<span>@ExpressionDescriptor.GetDescription(schedule.Cron);</span>}
+                        {<span>@ExpressionDescriptor.GetDescription(schedule.Cron)</span>}
                     </td>
                     <td>@schedule.Job.Path</td>
                     <td>

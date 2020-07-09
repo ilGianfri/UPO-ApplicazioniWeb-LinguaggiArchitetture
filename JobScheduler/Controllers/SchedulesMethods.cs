@@ -77,7 +77,8 @@ namespace JobScheduler.Controllers
             Schedule schedule = db.Schedules.FirstOrDefault(x => x.Id == id);
             if (schedule != null)
             {
-                schedule = editedSchedule;
+                schedule.Cron = editedSchedule.Cron;
+                schedule.JobId = editedSchedule.JobId;
                 await db.SaveChangesAsync();
 
                 return schedule;
