@@ -75,7 +75,7 @@ namespace JobScheduler.BackgroundWorker
                                     StringContent content = new StringContent(JsonSerializer.Serialize(job), Encoding.UTF8, "application/json");
                                     var res = await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
                                 }
-                                catch (Exception e) { }
+                                catch (Exception) { }
                             }
                         }
                     }
@@ -114,7 +114,7 @@ namespace JobScheduler.BackgroundWorker
                             _jobReportMethods.SetJobStatus(JobId, JobStatus.Running);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
 
                     }
