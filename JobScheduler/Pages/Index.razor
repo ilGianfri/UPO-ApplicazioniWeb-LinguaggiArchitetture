@@ -1,3 +1,44 @@
 ﻿@page "/"
+@inject SchedulesMethods schedulesMethods
+@inject JobsMethods jobMethods
+@inject GroupsMethods groupMethods
+@inject NodesMethods nodesMethods;
 
+<AuthorizeView Roles="Admin, Editor">
+    <h3>Hello, here's the latest details:</h3><br/>
 
+    <table>
+        <tr>
+            <th>Info</th>
+            <th>Count</th>
+        </tr>
+        <tr>
+            <td>Schedules</td>
+            <td align="center">@SchedulesCount</td>
+        </tr>
+        <tr>
+            <td>Groups</td>
+            <td align="center">@GroupsCount</td>
+        </tr>
+        <tr>
+            <td>Jobs</td>
+            <td align="center">@JobsCount</td>
+        </tr>
+        <tr>
+            <td>Nodes</td>
+            <td align="center">@NodesCount</td>
+        </tr>
+    </table>
+</AuthorizeView>
+
+@code {
+    private int SchedulesCount, GroupsCount, JobsCount, NodesCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        SchedulesCount = (await schedulesMethods.GetSchedulesAsync()).Count();
+        JobsCount = (await jobMethods.GetJobsAsync()).Count();
+        GroupsCount = (await groupMethods.GetGroupsAsync()).Count();
+        NodesCount = (await nodesMethods.GetNodesAsync()).Count();
+    }
+}
