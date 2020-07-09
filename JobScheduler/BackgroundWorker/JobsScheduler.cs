@@ -19,8 +19,6 @@ namespace JobScheduler.BackgroundWorker
     /// </summary>
     public class JobsScheduler
     {
-        private static readonly Comparer<DateTime> DescendingComparer = Comparer<DateTime>.Create((x, y) => y.CompareTo(x));
-
         //Jobs list ordered by time
         public ObservableCollection<Schedule> Jobs = new ObservableCollection<Schedule>();
         private Timer WakeUpTimer;

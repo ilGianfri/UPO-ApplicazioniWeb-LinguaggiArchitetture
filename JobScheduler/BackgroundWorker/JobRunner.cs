@@ -20,7 +20,7 @@ namespace JobScheduler.BackgroundWorker
         private int JobId;
         private int? ReportId;
 
-        public JobRunner(JobReportMethods jobReportMethods, GroupsMethods groupsMethods, NodesMethods nodesMethods)
+        public JobRunner(JobReportMethods jobReportMethods, GroupsMethods groupsMethods)
         {
             _jobReportMethods = jobReportMethods;
             _groupsMethods = groupsMethods;
