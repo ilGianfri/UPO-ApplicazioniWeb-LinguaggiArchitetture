@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                             JobId = job.Id;
                             using HttpClient client = new HttpClient();
                             StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { JobId = job.Id, Pid = jobProcess.Id, StartTime = jobProcess.StartTime }), Encoding.UTF8, "application/json");
+                            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.JWToken);
                             HttpResponseMessage httpResponse = await client.PostAsync($"{Constants.ServerUrl}/api/JobReports/create", content);
                             if (httpResponse.IsSuccessStatusCode)
                                 ReportId = Convert.ToInt32(await httpResponse.Content.ReadAsStringAsync());
@@ -41,7 +43,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                     }
                     catch
                     {
-                        //TODO: Save exception
+
                     }
 
                 }
@@ -55,6 +57,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                 Process p = (Process)sender;
                 using HttpClient client = new HttpClient();
                 StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.JWToken); 
                 HttpResponseMessage httpResponse = await client.PutAsync($"{Constants.ServerUrl}/api/JobReports/update/{ReportId}", content);
             }
             catch
