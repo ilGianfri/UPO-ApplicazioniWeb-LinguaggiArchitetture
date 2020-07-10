@@ -106,7 +106,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await GetNodes();
+        await GetGroups();
         await GetJobs();
     }
 
@@ -167,9 +167,10 @@
         StateHasChanged();
     }
 
-    private async Task GetNodes()
+    private async Task GetGroups()
     {
         ExistingGroups = (await groupsMethods.GetGroupsAsync()).ToList();
+        ExistingGroups.Insert(0, new Group());
     }
 
     private void EditJob(Job job)
