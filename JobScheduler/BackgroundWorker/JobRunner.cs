@@ -20,10 +20,11 @@ namespace JobScheduler.BackgroundWorker
         private int JobId;
         private int? ReportId;
 
-        public JobRunner(JobReportMethods jobReportMethods, GroupsMethods groupsMethods)
+        public JobRunner(JobReportMethods jobReportMethods, GroupsMethods groupsMethods, NodesMethods nodeMethods)
         {
             _jobReportMethods = jobReportMethods;
             _groupsMethods = groupsMethods;
+            _nodesMethods = nodeMethods;
         }
 
         /// <summary>
@@ -54,7 +55,10 @@ namespace JobScheduler.BackgroundWorker
                                 StringContent content = new StringContent(JsonSerializer.Serialize(job), Encoding.UTF8, "application/json");
                                 await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
                             }
-                            catch { }
+                            catch (Exception ex) 
+                            {
+                            
+                            }
                         }
                     }
                     else //Run job on defined group
@@ -129,8 +133,11 @@ namespace JobScheduler.BackgroundWorker
         {
             Process p = (Process)sender;
             //Save result & sets job as exited
-            await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime });
-            _jobReportMethods.SetJobStatus(JobId, JobStatus.Exited);
+            if (ReportId.HasValue)
+            {
+                await _jobReportMethods.EditJobReportAsync(ReportId.Value, new JobReport() { Id = ReportId.Value, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime });
+                _jobReportMethods.SetJobStatus(JobId, JobStatus.Exited);
+            }
         }
     }
 }

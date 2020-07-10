@@ -20,7 +20,7 @@ namespace JobScheduler.BackgroundWorker
     public class JobsScheduler
     {
         //Jobs list ordered by time
-        public ObservableCollection<Schedule> Jobs = new ObservableCollection<Schedule>();
+        public List<Schedule> Jobs = new List<Schedule>();
         private Timer WakeUpTimer;
         private readonly Timer UpdateJobsTimer;
         private readonly ILogger<JobsScheduler> _logger;
@@ -42,7 +42,7 @@ namespace JobScheduler.BackgroundWorker
             //Updates the Jobs list every minute
             UpdateJobsTimer = new Timer
             {
-                Interval = 60000
+                Interval = TimeSpan.FromMinutes(5).TotalMilliseconds
             };
             UpdateJobsTimer.Elapsed += (object sender, ElapsedEventArgs e) => PopulateJobsQueue();
             UpdateJobsTimer.Start();
@@ -54,7 +54,7 @@ namespace JobScheduler.BackgroundWorker
         private async void PopulateJobsQueue()
         {
             if (Jobs == null)
-                Jobs = new ObservableCollection<Schedule>();
+                Jobs = new List<Schedule>();
 
             Jobs.Clear();
 
@@ -67,7 +67,7 @@ namespace JobScheduler.BackgroundWorker
                 }
             }
 
-            Jobs.OrderBy(x => x.When);
+            Jobs = Jobs.OrderBy(x => x.When).ToList();
 
             UpdateWakeUpTimer();
         }
@@ -77,11 +77,9 @@ namespace JobScheduler.BackgroundWorker
         /// </summary>
         private void UpdateWakeUpTimer()
         {
-            if (WakeUpTimer == null)
-            {
-                WakeUpTimer = new Timer();
-                WakeUpTimer.Elapsed += WakeUp;
-            }
+            if (WakeUpTimer != null)
+                WakeUpTimer.Elapsed -= WakeUp;
+            WakeUpTimer = new Timer();
 
             if (Jobs.Count == 0)
                 return;
@@ -95,6 +93,9 @@ namespace JobScheduler.BackgroundWorker
             else
             {
                 WakeUpTimer.Interval = time;
+                WakeUpTimer.Elapsed += WakeUp;
+                //Execute only once
+                WakeUpTimer.AutoReset = false;
                 WakeUpTimer.Start();
             }
         }
@@ -104,8 +105,6 @@ namespace JobScheduler.BackgroundWorker
         /// </summary>
         private async void WakeUp(object sender, ElapsedEventArgs e)
         {
-            WakeUpTimer.Stop();
-
             Job job = Jobs?.FirstOrDefault()?.Job;
             if (job != null)
             {
@@ -149,9 +148,16 @@ namespace JobScheduler.BackgroundWorker
             {
                 using HttpClient client = new HttpClient();
                 StringContent content = new StringContent(JsonSerializer.Serialize(job), Encoding.UTF8, "application/json");
-                await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
+                HttpResponseMessage res = await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
+                if (res.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation($"Job accepted by slave");
+                }
             }
-            catch { }
+            catch (Exception ex) 
+            { 
+            
+            }
         }
 
         /// <summary>
@@ -169,6 +175,7 @@ namespace JobScheduler.BackgroundWorker
 
                 job.When = CrontabSchedule.Parse(job.Cron).GetNextOccurrence(DateTime.Now);
                 Jobs.Add(job);
+                Jobs = Jobs.OrderBy(x => x.When).ToList();
             }
             catch { }
         }
@@ -201,7 +208,7 @@ namespace JobScheduler.BackgroundWorker
         /// <param name="schedule"></param>
         public void StartJobNow(Schedule schedule)
         {
-            Jobs.Add(schedule);
+            Jobs.Insert(0, schedule);
             WakeUp(null, null);
             _logger.LogInformation($"Added job {schedule.Id}");
         }
