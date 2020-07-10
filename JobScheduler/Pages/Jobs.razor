@@ -102,7 +102,7 @@
     private string ErrorMessage { get; set; } = string.Empty;
     private bool ShowPopup { get; set; } = false;
     private string DialogTitle { get; set; } = "New Job";
-    private int SelectedGroupId { get; set; }
+    private int? SelectedGroupId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,7 +151,7 @@
         }
         else //New
         {
-            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, GroupId = SelectedGroupId };
+            var job = new Job { Path = CurrentJob.Path, Parameters = CurrentJob.Parameters, Status = JobStatus.Waiting, GroupId = SelectedGroupId != 0 ? SelectedGroupId : null};
 
             var response = await jobsMethods.CreateJobAsync(job);
             if (response)
