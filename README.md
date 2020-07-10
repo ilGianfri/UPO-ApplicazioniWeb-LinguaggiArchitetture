@@ -1,6 +1,6 @@
 # Progetto corso Applicazioni Web: Linguaggi &amp; Architetture 2019/2020
 
-### Le istruzioni per il setup sono contenute all'interno della Wiki
+### Le istruzioni per il setup sono contenute all'interno della [Wiki](https://github.com/ilGianfri/UPO-ApplicazioniWeb-LinguaggiArchitetture/wiki)
 
 Allo studente si chiede di implementare un job scheduler simile a http://cronicle.net/, in grado
 di lanciare processi (i job) in modo temporizzato su uno o più nodi, anche geograficamente
