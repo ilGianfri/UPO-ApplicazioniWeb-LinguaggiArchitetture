@@ -55,9 +55,9 @@ namespace JobScheduler.BackgroundWorker
                                 StringContent content = new StringContent(JsonSerializer.Serialize(job), Encoding.UTF8, "application/json");
                                 await client.PostAsync($"{node.IPStr}:{node.Port}/api/jobs/start", content);
                             }
-                            catch (Exception ex) 
+                            catch (Exception)
                             {
-                            
+
                             }
                         }
                     }

@@ -57,7 +57,7 @@ namespace JobScheduler.Slave.BackgroundWorker
                 Process p = (Process)sender;
                 using HttpClient client = new HttpClient();
                 StringContent content = new StringContent(JsonSerializer.Serialize(new JobReport() { Id = ReportId, JobId = JobId, Pid = p.Id, Output = p.StandardOutput.ReadToEnd(), ExitCode = p.ExitCode, ExitTime = p.ExitTime }), Encoding.UTF8, "application/json");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.JWToken); 
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Constants.JWToken);
                 HttpResponseMessage httpResponse = await client.PutAsync($"{Constants.ServerUrl}/api/JobReports/update/{ReportId}", content);
             }
             catch
