@@ -153,9 +153,9 @@ namespace JobScheduler.BackgroundWorker
                     _logger.LogInformation($"Job accepted by slave");
                 }
             }
-            catch (Exception ex) 
-            { 
-            
+            catch (Exception)
+            {
+
             }
         }
 
