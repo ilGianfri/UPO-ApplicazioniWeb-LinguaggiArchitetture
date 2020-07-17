@@ -32,7 +32,6 @@ namespace JobScheduler
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    //options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
                     options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
                     options.EnableSensitiveDataLogging(true);
                 });
@@ -43,13 +42,8 @@ namespace JobScheduler
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.TryAddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-
-            //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            //services.AddHttpContextAccessor();
-            //services.AddSingleton<HttpClient>();
-
             services.TryAddScoped<UserMethods>();
             services.TryAddScoped<NodesMethods>();
             services.TryAddScoped<JobsMethods>();
