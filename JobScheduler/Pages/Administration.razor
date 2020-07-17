@@ -193,7 +193,6 @@
             {
                 var user = new IdentityUser { UserName = CurrentDetailsUser.User.Email, Email = CurrentDetailsUser.User.Email, PasswordHash = CurrentDetailsUser.User.PasswordHash };
 
-
                 var response = await userMethods.CreateUserAsync(new UserWithRole() { User = user, Role = CurrentUserRole });
                 if (response)
                     ClosePopup();

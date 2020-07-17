@@ -22,8 +22,10 @@
                 <tr>
                     <td>@schedule.Id</td>
                     <td>
-                        @if (!string.IsNullOrEmpty(schedule.Cron))
-                        {<span>@ExpressionDescriptor.GetDescription(schedule.Cron)</span>}
+                        @if (!string.IsNullOrEmpty(schedule.Cron) && CrontabSchedule.TryParse(schedule.Cron) != null)
+                        {
+                            <span>@ExpressionDescriptor.GetDescription(schedule.Cron)</span>
+                        }
                     </td>
                     <td>@schedule.Job.Path</td>
                     <td>
