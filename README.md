@@ -1,5 +1,9 @@
 # Progetto corso Applicazioni Web: Linguaggi &amp; Architetture 2019/2020
 
+[![CodeFactor](https://www.codefactor.io/repository/github/ilgianfri/upo-applicazioniweb-linguaggiarchitetture/badge)](https://www.codefactor.io/repository/github/ilgianfri/upo-applicazioniweb-linguaggiarchitetture)
+![Last commit](https://img.shields.io/github/last-commit/ilGianfri/upo-applicazioniweb-linguaggiarchitetture.svg?style=popout-square)
+![License](https://img.shields.io/github/license/ilGianfri/upo-applicazioniweb-linguaggiarchitetture.svg?style=popout-square) 
+
 ### Le istruzioni per il setup sono contenute all'interno della [Wiki](https://github.com/ilGianfri/UPO-ApplicazioniWeb-LinguaggiArchitetture/wiki)
 
 **[ITALIANO]**
