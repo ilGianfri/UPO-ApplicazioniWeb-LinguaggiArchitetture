@@ -18,16 +18,22 @@
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Jobs
                 </NavLink>
             </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin">
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="groups">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Groups
                 </NavLink>
             </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin">
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="nodes">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Nodes
                 </NavLink>
             </li>
+        </AuthorizeView>
+        <AuthorizeView Roles="Admin, Editor">
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="schedules">
                     <span class="oi oi-list-rich" aria-hidden="true"></span> Schedules
