@@ -82,7 +82,6 @@ namespace JobScheduler.Controllers.API
             try
             {
                 await _jobMethods.KillRunningJobById(id);
-
             }
             catch
             {

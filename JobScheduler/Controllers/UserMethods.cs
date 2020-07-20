@@ -31,7 +31,6 @@ namespace JobScheduler.Controllers
                     IList<string> roles = await _userManager.GetRolesAsync(user);
                     result.Add(new UserWithRole() { User = user, Role = roles.FirstOrDefault() });
                 }
-
             }
             catch { }
 
